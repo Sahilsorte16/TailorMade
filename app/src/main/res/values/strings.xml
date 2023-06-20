@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">TailMate</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="Orders">Orders</string>
+    <string name="Customers">Customers</string>
+    <string name="Gallery">Gallery</string>
+    <string name="Past_Due">Past Due</string>
+    <string name="Upcoming">Upcoming</string>
+    <string name="Active">Active</string>
+    <string name="Completed">Completed</string>
+    <string name="Delivered">Delivered</string>
+    <string name="Select_from_Phone_Contact">Select from Phone Contact</string>
+    <string name="Add_New_Customer">Add New Customer</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TailMate</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="Orders">ऑर्डर</string>
+    <string name="Customers">ग्राहक</string>
+    <string name="Gallery">गॅलरी</string>
+    <string name="Past_Due">लेट</string>
+    <string name="Upcoming">आगामी</string>
+    <string name="Active">सक्रिय</string>
+    <string name="Completed">पूर्ण</string>
+    <string name="Delivered">वितरित</string>
+    <string name="Select_from_Phone_Contact">फोन संपर्कातून निवडा</string>
+    <string name="Add_New_Customer">नवीन ग्राहक जोडा</string>
+</resources>
