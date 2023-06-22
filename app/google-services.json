@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "177949388153",
+    "project_id": "tailormade-f630a",
+    "storage_bucket": "tailormade-f630a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:177949388153:android:a0f3de6f4c38b477c213a8",
+        "android_client_info": {
+          "package_name": "com.example.tailmate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "177949388153-28h9j3ubo7pmg2f1gl5qsn3ih5u1jtp6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQs6u906JDmrkYmIdGoiPT-7zuRrtMw6w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "177949388153-28h9j3ubo7pmg2f1gl5qsn3ih5u1jtp6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
