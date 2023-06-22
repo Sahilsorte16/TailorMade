@@ -11,4 +11,18 @@
     <string name="Delivered">Delivered</string>
     <string name="Select_from_Phone_Contact">Select from Phone Contact</string>
     <string name="Add_New_Customer">Add New Customer</string>
+    <string name="BodyMeasurements">Body Measurement</string>
+    <string name="full_height">Full height</string>
+    <string name="Arm_length">Arm Length</string>
+    <string name="body_rise">Body Rise</string>
+    <string name="Bust_height">Bust Height</string>
+    <string name="Croch_to_Knee">Croch to Knee</string>
+    <string name="Head">Head</string>
+    <string name="leg_length">Leg Length</string>
+    <string name="neck_size">Neck Size</string>
+    <string name="Shoulder">Shoulder</string>
+    <string name="Shoulder_to_Waist">Shoulder to Waist</string>
+    <string name="waist_to_hip">Waist to Hip</string>
+    <string name="waist_to_knee">Waist to Knee</string>
+    <string name="waist_to_floor">Waist to Floor</string>
 </resources>

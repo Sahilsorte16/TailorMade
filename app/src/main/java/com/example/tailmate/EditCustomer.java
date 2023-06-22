@@ -1,6 +1,10 @@
 package com.example.tailmate;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -40,10 +44,12 @@ public class EditCustomer extends AppCompatActivity {
         String number = in.getStringExtra("Phone").toString();
 
         if(!naam.isEmpty())
-        name.setText(naam);
+            name.setText(naam);
 
         if(!number.isEmpty())
-        phone.setText(number);
+            phone.setText(number);
+
+        replaceFragment(new Measurements());
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,10 +83,19 @@ public class EditCustomer extends AppCompatActivity {
                 }
             }
         });
+
+
     }
 
     private void saveChanges() {
 
+    }
+
+    private void replaceFragment(Fragment fragment){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frameLayout,fragment);
+        fragmentTransaction.commit();
     }
 
     @Override

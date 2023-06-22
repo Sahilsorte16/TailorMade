@@ -1,5 +1,6 @@
 package com.example.tailmate;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -19,6 +20,7 @@ public class OTP extends AppCompatActivity {
     EditText box1, box2, box3, box4, box5, box6;
     TextView tv, tv1;
     Button verify;
+//    FirebaseAuth firebaseAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,9 +36,12 @@ public class OTP extends AppCompatActivity {
         tv1 = (TextView) findViewById(R.id.textView5);
         verify = (Button) findViewById(R.id.verify);
 
+        //firebaseAuth = FirebaseAuth.getInstance();
+
         Intent in = getIntent();
         String number = in.getStringExtra("Number");
         String src = in.getStringExtra("Src");
+        String mVerificationId = in.getStringExtra("VId");
         tv.setText("Enter the 6-digit code sent to\n" + number);
         // Set up listeners
         setListeners();
@@ -66,14 +71,42 @@ public class OTP extends AppCompatActivity {
                     Toast.makeText(OTP.this, "Enter Correct OTP", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    if(src.equals("SignUp"))
-                    {
-                        startActivity(new Intent(OTP.this, ShopDetails.class));
-                    }
-                    else
-                    {
-                        startActivity(new Intent(OTP.this, HomePage.class));
-                    }
+                    String verificationCode = box1.getText().toString()+
+                            box2.getText().toString()+
+                            box3.getText().toString()+
+                            box4.getText().toString()+
+                            box5.getText().toString()+
+                            box6.getText().toString();
+
+//                    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, verificationCode);
+//                    firebaseAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<AuthResult> task) {
+//                            if (task.isSuccessful()) {
+//                                // Sign in success, update UI with the signed-in user's information
+//                                Toast.makeText(OTP.this, "Authentication Successful", Toast.LENGTH_SHORT).show();
+//
+//                                if(src.equals("SignUp"))
+//                                {
+//                                    startActivity(new Intent(OTP.this, ShopDetails.class));
+//                                }
+//                                else
+//                                {
+//                                    startActivity(new Intent(OTP.this, HomePage.class));
+//                                }
+//                            } else {
+//                                // Sign in failed, display a message to the user.
+//                                if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+//                                    // The verification code entered was invalid
+//                                    Toast.makeText(OTP.this, "Invalid Verification Code", Toast.LENGTH_SHORT).show();
+//                                } else {
+//                                    // Other errors occurred during sign in
+//                                    Toast.makeText(OTP.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
+//                                }
+//                            }
+//                        }
+//                    });
+
                 }
 
 

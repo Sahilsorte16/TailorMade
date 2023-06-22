@@ -21,16 +21,19 @@
         android:theme="@style/Theme.TailMate"
         tools:targetApi="31">
         <activity
+            android:name=".BodyMeasurement"
+            android:exported="false" />
+        <activity
             android:name=".EditCustomer"
             android:exported="false" />
         <activity
             android:name=".CustomerDetails"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".HomePage"
             android:exported="false" />
         <activity
-            android:name=".HomePage"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

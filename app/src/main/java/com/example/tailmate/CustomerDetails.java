@@ -33,6 +33,7 @@ public class CustomerDetails extends AppCompatActivity {
         msg = findViewById(R.id.msg);
         back = findViewById(R.id.back);
         edit = findViewById(R.id.edit);
+        measurements = findViewById(R.id.body_measurements);
 
         Intent in = getIntent();
         name.setText(in.getStringExtra("Name"));
@@ -42,6 +43,15 @@ public class CustomerDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 CallTheNumber(phone.getText().toString());
+            }
+        });
+
+        measurements.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(CustomerDetails.this, BodyMeasurement.class);
+                i.putExtra("Name", in.getStringExtra("Name"));
+                startActivity(i);
             }
         });
 
