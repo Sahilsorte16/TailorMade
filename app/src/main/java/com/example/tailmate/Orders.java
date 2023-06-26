@@ -21,7 +21,7 @@ public class Orders extends Fragment {
         View v = inflater.inflate(R.layout.fragment_orders, container, false);
 
         tabLayout = v.findViewById(R.id.tabs);
-        int defaultTabPosition=2;
+        int defaultTabPosition=1;
         TabLayout.Tab defaultTab = tabLayout.getTabAt(defaultTabPosition);
         if (defaultTab != null) {
             defaultTab.select();

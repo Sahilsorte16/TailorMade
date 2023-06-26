@@ -48,7 +48,8 @@
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/rectangle"
-        android:inputType="number"
+        android:editable="true"
+        android:inputType="numberDecimal"
         android:textAlignment="center"
         android:padding="5dp"
         android:imeOptions="actionNext"/>

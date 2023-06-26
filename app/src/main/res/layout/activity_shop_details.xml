@@ -34,7 +34,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.81">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -42,28 +42,29 @@
                 android:id="@+id/shop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="30dp"
                 android:layout_marginTop="24dp"
                 android:ems="10"
                 android:hint="Shop Name"
                 android:inputType="textPersonName"
-                android:textAlignment="center"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.496"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textAlignment="center" />
 
             <Button
                 android:id="@+id/location"
-                android:layout_width="265dp"
-                android:layout_height="46dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:layout_marginHorizontal="50dp"
                 android:background="@drawable/layout_border"
                 android:backgroundTint="@color/white"
                 android:text="Use current location"
                 android:textColor="@color/black"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/shop" />
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/shop"/>
 
             <EditText
                 android:id="@+id/pin"
@@ -75,10 +76,10 @@
                 android:inputType="number"
                 android:maxLength="6"
                 android:textAlignment="center"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.521"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/location" />
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="50dp"
+                android:layout_below="@id/location"/>
 
             <EditText
                 android:id="@+id/streetName"
@@ -88,10 +89,10 @@
                 android:ems="10"
                 android:hint="Street, Locality or area"
                 android:inputType="textPersonName"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.521"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/pin" />
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="50dp"
+                android:layout_below="@id/pin"/>
 
             <EditText
                 android:id="@+id/district"
@@ -101,10 +102,10 @@
                 android:ems="10"
                 android:hint="City"
                 android:inputType="textPersonName"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.506"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/streetName" />
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="50dp"
+                android:layout_below="@id/streetName" />
 
             <AutoCompleteTextView
                 android:id="@+id/states"
@@ -114,10 +115,10 @@
                 android:ems="10"
                 android:hint="State"
                 android:inputType="textPersonName"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.497"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/district" />
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="50dp"
+                android:layout_below="@id/district" />
 
             <Spinner
                 android:id="@+id/spinner"
@@ -126,25 +127,28 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/layout_thin_border"
                 android:textAlignment="center"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/states" />
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="50dp"
+                android:layout_below="@id/states" />
 
             <ImageView
                 android:id="@+id/Continue"
-                android:layout_width="53dp"
-                android:layout_height="53dp"
-                android:scaleType="centerCrop"
-                android:padding="10dp"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/spinner"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="50dp"
+                android:layout_marginStart="167dp"
+                android:layout_marginTop="26dp"
+                android:layout_marginEnd="159dp"
                 android:background="@drawable/prof_bg"
-                android:src="@drawable/baseline_arrow_forward_ios_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spinner"
-                app:layout_constraintVertical_bias="0.428" />
+                android:padding="10dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/baseline_arrow_forward_ios_24" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
 

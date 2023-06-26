@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="bg_grey">#BEBEBE</color>
     <color name="default_dark">#3A3A3A</color>
+    <color name="Delete_red">#ED4A4A</color>
 </resources>

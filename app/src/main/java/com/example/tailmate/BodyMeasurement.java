@@ -15,11 +15,25 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class BodyMeasurement extends AppCompatActivity {
 
     TextView name, upd;
     ImageView back;
     FrameLayout frameLayout;
+
+    public String Cid;
+
+    FirebaseAuth firebaseAuth;
+    FirebaseFirestore firebaseFirestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +45,12 @@ public class BodyMeasurement extends AppCompatActivity {
 
         frameLayout = findViewById(R.id.framelayout);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseFirestore = FirebaseFirestore.getInstance();
+
         Intent in = getIntent();
         name.setText(in.getStringExtra("Name").toString());
-
+        Cid = in.getStringExtra("Cid");
         replaceFragment(new Measurements());
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -42,6 +59,14 @@ public class BodyMeasurement extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+        firebaseFirestore.collection("Customers").document(hash(firebaseAuth.getCurrentUser().getPhoneNumber())).collection("Details")
+                .document(Cid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        upd.setText("Last Updated On " + documentSnapshot.get("Last Updated On"));
+                    }
+                });
     }
 
     private void replaceFragment(Fragment fragment){
@@ -51,4 +76,27 @@ public class BodyMeasurement extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
+    private static String hash(String phoneNumber) {
+        String hash = phoneNumber;
+
+        try {
+            // Create an instance of the MD5 hashing algorithm
+            MessageDigest md = MessageDigest.getInstance("MD5");
+
+            // Convert the phone number to bytes and generate the hash
+            md.update(phoneNumber.getBytes());
+            byte[] digest = md.digest();
+
+            // Convert the byte array to a BigInteger
+            BigInteger bigInt = new BigInteger(1, digest);
+
+            // Convert the BigInteger to a hexadecimal string
+            hash = bigInt.toString(16);
+        } catch (NoSuchAlgorithmException e) {
+            // Handle exceptions related to the hashing algorithm
+            e.printStackTrace();
+        }
+
+        return hash;
+    }
 }

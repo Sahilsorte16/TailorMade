@@ -25,17 +25,33 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -55,6 +71,12 @@ public class ShopDetails extends AppCompatActivity {
     Geocoder geocoder;
     LocationManager locationManager;
     ImageView profile, Continue;
+    TextView naame;
+    FirebaseFirestore db;
+    FirebaseAuth firebaseAuth;
+    Uri selectedImageUri;
+    Map<String,Object> Shop;
+    String Uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +91,17 @@ public class ShopDetails extends AppCompatActivity {
         loc = findViewById(R.id.location);
         profile = findViewById(R.id.profilePic);
         Continue = findViewById(R.id.Continue);
+        naame = findViewById(R.id.naam);
+        db = FirebaseFirestore.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
 
+        selectedImageUri = null;
+        Intent in = getIntent();
+
+        String name = in.getStringExtra("Name");
+        String email = in.getStringExtra("Email");
+        Uid = in.getStringExtra("Hash");
+        naame.setText("Hi, " + name);
         pinCode.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -117,6 +149,18 @@ public class ShopDetails extends AppCompatActivity {
                 }
                 else
                 {
+                    Shop = new HashMap<>();
+                    Shop.put("Owner", name);
+                    Shop.put("Email",email);
+                    Shop.put("shopName", shop);
+                    List<Object> address= new ArrayList<>(Arrays.asList(street, City, state, country, PIN));
+                    Shop.put("Stitch for", "Female");
+                    Shop.put("Address", address);
+
+                    if(selectedImageUri!=null)
+                        storeImagetoStorage(selectedImageUri);
+                    else
+                        storeToFirestore(Shop);
                     startActivity(new Intent(ShopDetails.this, HomePage.class));
                 }
             }
@@ -142,6 +186,36 @@ public class ShopDetails extends AppCompatActivity {
         autoCompleteTextView.setAdapter(statesAdapter);
         country.setAdapter(countryAdapter);
 
+    }
+
+    private void storeImagetoStorage(Uri selectedImageUri) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef = storageRef.child(Uid+"/profile.jpg");
+        UploadTask uploadTask = imageRef.putFile(selectedImageUri);
+        uploadTask.addOnSuccessListener(taskSnapshot -> {
+            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                Uri imageUrl = uri;
+                Shop.put("Image", imageUrl);
+                storeToFirestore(Shop);
+            });
+        });
+    }
+
+    private void storeToFirestore(Map<String, Object> shop) {
+
+        DocumentReference documentRef = db.collection("Shop").document(Uid);
+        documentRef.set(shop).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+                Toast.makeText(ShopDetails.this, "Shop set up failed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void fetchLocationData(String pinCode) {
@@ -306,7 +380,7 @@ public class ShopDetails extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
-            Uri selectedImageUri = data.getData();
+            selectedImageUri = data.getData();
             Glide.with(this)
                     .load(selectedImageUri)
                     .apply(RequestOptions.circleCropTransform())
@@ -329,6 +403,30 @@ public class ShopDetails extends AppCompatActivity {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
+    }
+
+    private static String generateUniqueID(String phoneNumber) {
+        String hash = phoneNumber;
+
+        try {
+            // Create an instance of the MD5 hashing algorithm
+            MessageDigest md = MessageDigest.getInstance("MD5");
+
+            // Convert the phone number to bytes and generate the hash
+            md.update(phoneNumber.getBytes());
+            byte[] digest = md.digest();
+
+            // Convert the byte array to a BigInteger
+            BigInteger bigInt = new BigInteger(1, digest);
+
+            // Convert the BigInteger to a hexadecimal string
+            hash = bigInt.toString(16);
+        } catch (NoSuchAlgorithmException e) {
+            // Handle exceptions related to the hashing algorithm
+            e.printStackTrace();
+        }
+
+        return hash;
     }
 
     @Override

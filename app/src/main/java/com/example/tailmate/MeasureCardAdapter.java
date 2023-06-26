@@ -3,7 +3,6 @@ package com.example.tailmate;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,24 +27,33 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private static final int VIEW_TYPE_CARD = 0;
     private static final int VIEW_TYPE_ADD_CARD = 1;
+    private static final int VIEW_DISPLAY_CUSTOMER_CARD = 2;
     private final Context context;
     private List<MeasureCardItem> cardItems;
+    List<EditText> ets;
     boolean editable;
 
     public MeasureCardAdapter(List<MeasureCardItem> cardItems, Context context, boolean editable) {
         this.cardItems = cardItems;
         this.context = context;
         this.editable = editable;
+        ets = new ArrayList<>();
     }
 
     @Override
     public int getItemViewType(int position) {
         // Return the appropriate view type based on the position
-        if (position < cardItems.size()) {
-            return VIEW_TYPE_CARD;
-        } else {
-            return VIEW_TYPE_ADD_CARD;
+        if(editable)
+        {
+            if (position < cardItems.size()) {
+                return VIEW_TYPE_CARD;
+            } else {
+                return VIEW_TYPE_ADD_CARD;
+            }
         }
+        else
+            return VIEW_DISPLAY_CUSTOMER_CARD;
+
     }
 
     public void addItem(MeasureCardItem cardItem) {
@@ -51,13 +65,19 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        System.out.println("Inside onCreateViewHolder");
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        if (viewType == VIEW_TYPE_CARD) {
+        if (editable && viewType == VIEW_TYPE_CARD) {
             View view = inflater.inflate(R.layout.measurement_card, parent, false);
             return new CardViewHolder(view);
         } else if (editable && viewType == VIEW_TYPE_ADD_CARD) {
             View view = inflater.inflate(R.layout.add_card, parent, false);
             return new AddCardViewHolder(view);
+        }
+        else if(viewType == VIEW_DISPLAY_CUSTOMER_CARD)
+        {
+            View view = inflater.inflate(R.layout.display_body_card, parent,false);
+            return new DisplayCardViewHolder(view);
         }
 
         throw new IllegalArgumentException("Invalid view type");
@@ -65,13 +85,12 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        System.out.println("Inside onBindViewHolder");
         if (holder instanceof CardViewHolder) {
             MeasureCardItem cardItem = cardItems.get(position);
             ((CardViewHolder) holder).bind(cardItem,position);
-
-            if(editable)
-            {
-                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            ets.add(((CardViewHolder) holder).getEditText());
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
                         if(cardItem.isRemovable())
@@ -81,9 +100,6 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         return true;
                     }
                 });
-            }
-
-
         } else if (holder instanceof AddCardViewHolder) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -91,6 +107,9 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     showAddCardDialog();
                 }
             });
+        } else if (holder instanceof DisplayCardViewHolder) {
+            MeasureCardItem cardItem = cardItems.get(position);
+            ((DisplayCardViewHolder) holder).bind(cardItem);
         }
     }
 
@@ -126,6 +145,30 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return cardItems.size();
     }
 
+    private static String hash(String phoneNumber) {
+        String hash = phoneNumber;
+
+        try {
+            // Create an instance of the MD5 hashing algorithm
+            MessageDigest md = MessageDigest.getInstance("MD5");
+
+            // Convert the phone number to bytes and generate the hash
+            md.update(phoneNumber.getBytes());
+            byte[] digest = md.digest();
+
+            // Convert the byte array to a BigInteger
+            BigInteger bigInt = new BigInteger(1, digest);
+
+            // Convert the BigInteger to a hexadecimal string
+            hash = bigInt.toString(16);
+        } catch (NoSuchAlgorithmException e) {
+            // Handle exceptions related to the hashing algorithm
+            e.printStackTrace();
+        }
+
+        return hash;
+    }
+
     private void showAddCardDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -145,15 +188,25 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         // Validate the input here and add the new card if valid
                         if (!parameter1.isEmpty() && !parameter2.isEmpty()) {
                             // Create a new CardItem and add it to the list
-                            MeasureCardItem newCard = new MeasureCardItem(parameter1);
+                            MeasureCardItem newCard = new MeasureCardItem(parameter1, parameter2);
                             newCard.setRemovable(true);
                             addItem(newCard);
-                            notifyDataSetChanged();
+                            //notifyDataSetChanged();
                         }
                     }
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
+    }
+
+    public List<MeasureCardItem> getMeasurementList() {
+       for(int i=0; i<cardItems.size(); i++)
+       {
+           System.out.println(cardItems.get(i).getEt().getText().toString());
+           cardItems.get(i).setLength(cardItems.get(i).getEt().getText().toString());
+       }
+
+       return cardItems;
     }
 
     class CardViewHolder extends RecyclerView.ViewHolder {
@@ -167,18 +220,24 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             textView = itemView.findViewById(R.id.type);
             length = itemView.findViewById(R.id.inches);
             iv = itemView.findViewById(R.id.mVector);
-            if(!editable)
-                length.setEnabled(false);
-            else
-                length.setEnabled(true);
-
+            int color = length.getCurrentTextColor();
+            length.setEnabled(editable);
+            length.setTextColor(color);
         }
 
         public void bind(MeasureCardItem cardItem,int position) {
             textView.setText(cardItem.getTitle());
+
             iv.setImageResource(cardItem.getImageResId());
+            if(!cardItem.getLength().equals("0"))
+                length.setText(cardItem.getLength());
+            else
+                length.setText("");
+            cardItem.setEt(length);
+            System.out.println(cardItem.getEt().getText());
         }
 
+        public EditText getEditText(){return length;}
     }
 
     class AddCardViewHolder extends RecyclerView.ViewHolder {
@@ -188,6 +247,23 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public AddCardViewHolder(@NonNull View itemView) {
             super(itemView);
             //plusIcon = itemView.findViewById(R.id.plusIcon);
+        }
+    }
+
+    private class DisplayCardViewHolder extends RecyclerView.ViewHolder {
+        TextView bmt, len;
+        ImageView imv;
+        public DisplayCardViewHolder(View view) {
+            super(view);
+            bmt = view.findViewById(R.id.bmt);
+            len = view.findViewById(R.id.len);
+            imv = view.findViewById(R.id.imv);
+        }
+
+        public void bind(MeasureCardItem cardItem) {
+            bmt.setText(cardItem.getTitle());
+            imv.setImageResource(cardItem.getImageResId());
+            len.setText(cardItem.getLength());
         }
     }
 }

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -20,11 +21,17 @@ public class CustomerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static final int VIEW_TYPE_CUSTOMER = 1;
 
     private List<Object> itemList;
+    private List<Customer> customerList;
+    RecyclerView recylerView;
     Context context;
+    Fragment fragment;
 
-    public CustomerAdapter(List<Customer> customerList, Context context) {
+    public CustomerAdapter(List<Customer> customerList, Context context, RecyclerView rv, Fragment fragment) {
         itemList = generateItemList(customerList);
+        this.customerList = customerList;
         this.context = context;
+        this.fragment = fragment;
+        recylerView = rv;
     }
 
     private List<Object> generateItemList(List<Customer> customerList) {
@@ -100,7 +107,9 @@ public class CustomerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     Intent intent = new Intent(context, CustomerDetails.class);
                     intent.putExtra("Name", c.getName());
                     intent.putExtra("Phone", c.getMobileNumber());
-                    context.startActivity(intent);
+                    intent.putExtra("Gender", c.getGender());
+                    intent.putExtra("Cid", c.getCid());
+                    fragment.startActivityForResult(intent,178);
                 }
             });
         }
@@ -110,6 +119,17 @@ public class CustomerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public int getItemCount() {
         return itemList.size();
     }
+
+    public void removeItems(int position)
+    {
+        itemList.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public List<Customer> getCustomerList() {
+        return customerList;
+    }
+
 
     static class LetterViewHolder extends RecyclerView.ViewHolder {
         private TextView letterTextView;
@@ -127,7 +147,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     static class CustomerViewHolder extends RecyclerView.ViewHolder {
         private TextView nameTextView;
         private TextView mobileNumberTextView;
-        private Customer customer;
+        public Customer customer;
         CustomerViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.customer_name);
@@ -140,7 +160,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mobileNumberTextView.setText(customer.getMobileNumber());
         }
 
-        Customer getCustomer() {
+        public Customer getCustomer() {
             return customer;
         }
     }

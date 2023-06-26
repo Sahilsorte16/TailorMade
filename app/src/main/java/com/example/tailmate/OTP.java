@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,12 +16,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
+
 public class OTP extends AppCompatActivity {
 
     EditText box1, box2, box3, box4, box5, box6;
     TextView tv, tv1;
     Button verify;
-//    FirebaseAuth firebaseAuth;
+    FirebaseAuth firebaseAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,11 +45,14 @@ public class OTP extends AppCompatActivity {
         tv1 = (TextView) findViewById(R.id.textView5);
         verify = (Button) findViewById(R.id.verify);
 
-        //firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
 
         Intent in = getIntent();
+        String name = in.getStringExtra("Name");
+        String email = in.getStringExtra("Email");
         String number = in.getStringExtra("Number");
         String src = in.getStringExtra("Src");
+        String uid = in.getStringExtra("Uid");
         String mVerificationId = in.getStringExtra("VId");
         tv.setText("Enter the 6-digit code sent to\n" + number);
         // Set up listeners
@@ -71,6 +83,7 @@ public class OTP extends AppCompatActivity {
                     Toast.makeText(OTP.this, "Enter Correct OTP", Toast.LENGTH_SHORT).show();
                 }
                 else{
+                    showLoadingDialog();
                     String verificationCode = box1.getText().toString()+
                             box2.getText().toString()+
                             box3.getText().toString()+
@@ -78,34 +91,39 @@ public class OTP extends AppCompatActivity {
                             box5.getText().toString()+
                             box6.getText().toString();
 
-//                    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, verificationCode);
-//                    firebaseAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<AuthResult> task) {
-//                            if (task.isSuccessful()) {
-//                                // Sign in success, update UI with the signed-in user's information
-//                                Toast.makeText(OTP.this, "Authentication Successful", Toast.LENGTH_SHORT).show();
-//
-//                                if(src.equals("SignUp"))
-//                                {
-//                                    startActivity(new Intent(OTP.this, ShopDetails.class));
-//                                }
-//                                else
-//                                {
-//                                    startActivity(new Intent(OTP.this, HomePage.class));
-//                                }
-//                            } else {
-//                                // Sign in failed, display a message to the user.
-//                                if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-//                                    // The verification code entered was invalid
-//                                    Toast.makeText(OTP.this, "Invalid Verification Code", Toast.LENGTH_SHORT).show();
-//                                } else {
-//                                    // Other errors occurred during sign in
-//                                    Toast.makeText(OTP.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
-//                                }
-//                            }
-//                        }
-//                    });
+                    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, verificationCode);
+                    firebaseAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Toast.makeText(OTP.this, "Authentication Successful", Toast.LENGTH_SHORT).show();
+
+                                if(src.equals("SignUp"))
+                                {
+                                    Intent in = new Intent(OTP.this, ShopDetails.class);
+                                    in.putExtra("Name", name);
+                                    in.putExtra("Email", email);
+                                    in.putExtra("Hash", uid);
+                                    startActivity(in);
+                                }
+                                else
+                                {
+                                    startActivity(new Intent(OTP.this, HomePage.class));
+                                }
+                            } else {
+                                // Sign in failed, display a message to the user.
+                                if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                    // The verification code entered was invalid
+                                    Toast.makeText(OTP.this, "Invalid Verification Code", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // Other errors occurred during sign in
+                                    Toast.makeText(OTP.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            dismissLoadingDialog();
+                        }
+                    });
 
                 }
 
@@ -188,4 +206,19 @@ public class OTP extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {}
+
+    private ProgressDialog progressDialog;
+
+    private void showLoadingDialog() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    private void dismissLoadingDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
 }
