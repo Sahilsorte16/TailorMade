@@ -152,9 +152,10 @@ public class CustomerPDFGenerator {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         for (DocumentSnapshot ds: queryDocumentSnapshots.getDocuments())
                         {
-                            MeasureCardItem mci = new MeasureCardItem(ds.get("Title").toString(),Integer.parseInt(ds.get("Image").toString()),
-                                    ds.get("Length").toString());
+                            MeasureCardItem mci = new MeasureCardItem(ds.get("Title").toString(), ds.get("Length").toString());
                             mci.setRemovable(Boolean.parseBoolean(ds.get("Removable").toString()));
+                            if(ds.get("ImageUrl") != null)
+                                mci.setImageUri(Uri.parse(ds.get("ImageUrl").toString()));
                             cardItems.add(mci);
 
                         }

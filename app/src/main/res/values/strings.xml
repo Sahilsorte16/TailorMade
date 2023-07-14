@@ -11,6 +11,19 @@
     <string name="Delivered">Delivered</string>
     <string name="Select_from_Phone_Contact">Select from Phone Contact</string>
     <string name="Add_New_Customer">Add New Customer</string>
+    <string-array name="steps">
+        <item>Received</item>
+        <item>In Progress</item>
+        <item>Completed</item>
+        <item>Delivered</item>
+    </string-array>
+
+    <string-array name="OrderFor">
+        <item>Stitching</item>
+        <item>Alteration</item>
+    </string-array>
+
+    <string name="Add_Order">Add Order</string>
     <string name="BodyMeasurements">Body Measurement</string>
     <string name="full_height">Full height</string>
     <string name="Arm_length">Arm Length</string>
@@ -25,4 +38,8 @@
     <string name="waist_to_hip">Waist to Hip</string>
     <string name="waist_to_knee">Waist to Knee</string>
     <string name="waist_to_floor">Waist to Floor</string>
+    <string name="OrderDetails">Order Details</string>
+    <string name="Add_Item">Add Item</string>
+    <string name="ItemDetails">Item Details</string>
+    <string name="PrepareOrder">Prepare Order Item</string>
 </resources>

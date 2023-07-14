@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
@@ -80,8 +81,13 @@ public class Customers extends Fragment {
         tv.setVisibility(View.VISIBLE);
         fetchCustomers();
 
+        if(getActivity() instanceof HomePage)
+        {
+            //implementSwipe();
+        }
+
         addCustomer();
-        implementSwipe();
+
 
         in = new Intent(getActivity(), EditCustomer.class);
         in.putExtra("Activity", "Add Customer");
@@ -183,7 +189,7 @@ public class Customers extends Fragment {
                     new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
                             .addSwipeLeftBackgroundColor(ContextCompat.getColor(getActivity(), R.color.Delete_red))
                             .addSwipeLeftActionIcon(R.drawable.baseline_delete_24)
-                            .addSwipeLeftLabel("Delete Task")
+                            .addSwipeLeftLabel("Delete Customer")
                             .create()
                             .decorate();
 
@@ -337,6 +343,20 @@ public class Customers extends Fragment {
         }
         else if(requestCode==178 && resultCode == Activity.RESULT_OK){
             fetchCustomers();
+        }
+        else if(requestCode==871){
+
+            if(resultCode == Activity.RESULT_OK)
+            {
+                Intent intent = new Intent();
+                getActivity().setResult(Activity.RESULT_OK, intent);
+                getActivity().finish();
+            }
+            else {
+                Intent intent = new Intent();
+                getActivity().setResult(Activity.RESULT_CANCELED, intent);
+                getActivity().finish();
+            }
         }
     }
 

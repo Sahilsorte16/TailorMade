@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ItemDetailsDisplay">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/itemName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Item Name"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="30dp"
+            android:textSize="20dp"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/itemType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Item Type"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/itemName"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="30dp"
+            android:textSize="15dp"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/instructionsText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Special Instructions"
+            android:background="@color/bg_grey"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/itemType"
+            android:layout_marginTop="10dp"
+            android:textSize="18dp"
+            android:textAlignment="center"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/instructionsText"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="30dp"/>
+
+        <TextView
+            android:id="@+id/BodyMsText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dress Measurements"
+            android:background="@color/bg_grey"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/instructions"
+            android:layout_marginTop="10dp"
+            android:textSize="18dp"
+            android:textAlignment="center"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/measurements"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/BodyMsText"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="30dp"/>
+
+        <TextView
+            android:id="@+id/ChargesText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Charges"
+            android:background="@color/bg_grey"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/measurements"
+            android:layout_marginTop="10dp"
+            android:textSize="18dp"
+            android:textAlignment="center"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/Charges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/ChargesText"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="30dp"/>
+
+        <TextView
+            android:id="@+id/totalText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/Charges"
+            android:layout_alignParentStart="true"
+            android:layout_marginVertical="3dp"
+            android:layout_marginStart="60dp"
+            android:text="Item Total Charges"
+            android:textStyle="italic|bold"
+            android:textSize="18dp"/>
+
+        <TextView
+            android:id="@+id/totalCharges"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/Charges"
+            android:layout_alignParentEnd="true"
+            android:layout_marginVertical="3dp"
+            android:layout_marginEnd="60dp"
+            android:text="\u20B9 60"
+            android:textStyle="bold"
+            android:textColor="#2BE832"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/ClothImagesText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cloth Images"
+            android:background="@color/bg_grey"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/totalCharges"
+            android:layout_marginTop="10dp"
+            android:textSize="18dp"
+            android:textAlignment="center"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/clothes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/ClothImagesText"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="30dp"/>
+
+        <TextView
+            android:id="@+id/PatternImagesText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pattern Images"
+            android:background="@color/bg_grey"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/clothes"
+            android:layout_marginTop="10dp"
+            android:textSize="18dp"
+            android:textAlignment="center"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/patterns"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/PatternImagesText"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginHorizontal="30dp"/>
+
+        <TextView
+            android:id="@+id/DressImagesText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dress Images"
+            android:background="@color/bg_grey"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/patterns"
+            android:layout_marginTop="10dp"
+            android:textSize="18dp"
+            android:textAlignment="center"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/dresses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/DressImagesText"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginHorizontal="30dp"/>
+    </RelativeLayout>
+</ScrollView>

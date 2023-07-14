@@ -1,6 +1,7 @@
 package com.example.tailmate;
 
 import android.app.ProgressDialog;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -41,6 +45,7 @@ public class Measurements extends Fragment {
 
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
+    FirebaseStorage storage;
     List<MeasureCardItem> cardItems;
     boolean editable;
     @Override
@@ -54,6 +59,7 @@ public class Measurements extends Fragment {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
         // Prepare sample data for the cards
         cardItems = new ArrayList<>();
 
@@ -73,22 +79,8 @@ public class Measurements extends Fragment {
             recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
             if(editCustomer.activity.equals("Add Customer"))
             {
-                cardItems.add(new MeasureCardItem(getString(R.string.full_height),R.drawable.full_height_f));
-                cardItems.add(new MeasureCardItem(getString(R.string.waist_to_floor), R.drawable.waist_to_floor_f));
-                cardItems.add(new MeasureCardItem(getString(R.string.waist_to_knee), R.drawable.waist_to_knee_f));
-                cardItems.add(new MeasureCardItem(getString(R.string.waist_to_hip), R.drawable.waist_to_hip_f));
-                cardItems.add(new MeasureCardItem(getString(R.string.Shoulder_to_Waist), R.drawable.shoulder_to_waist_f));
-                cardItems.add(new MeasureCardItem(getString(R.string.Shoulder), R.drawable.shoulder_f));
-                cardItems.add(new MeasureCardItem(getString(R.string.Bust_height), R.drawable.bust_height_f));
-                cardItems.add(new MeasureCardItem(getString(R.string.Croch_to_Knee), R.drawable.croch_to_knee_f));
-                cardItems.add(new MeasureCardItem(getString(R.string.leg_length),R.drawable.leg_length_f));
-                cardItems.add(new MeasureCardItem(getString(R.string.body_rise), R.drawable.body_rise_f));
-                cardItems.add(new MeasureCardItem(getString(R.string.Head), R.drawable.head_f));
-                cardItems.add(new MeasureCardItem(getString(R.string.neck_size), R.drawable.neck_size_f));
-                cardItems.add(new MeasureCardItem(getString(R.string.Arm_length), R.drawable.arm_length_f));
+                setUpImagesWithNamesForFirstTime();
 
-                cardAdapter = new MeasureCardAdapter(cardItems, getContext(), editable);
-                recyclerView.setAdapter(cardAdapter);
             }
             else
             {
@@ -103,6 +95,35 @@ public class Measurements extends Fragment {
         return v;
     }
 
+    private void setUpImagesWithNamesForFirstTime() {
+        showLoadingDialog();
+        StorageReference storageRef = storage.getReference().child("Body Measurements"); // Replace "images" with your desired folder name
+
+        storageRef.listAll()
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+                        for (StorageReference item : listResult.getItems()) {
+                            String imageName = item.getName().replace(".jpg", "");
+                            item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    //System.out.println(imageName + " " + uri);
+                                    cardItems.add(new MeasureCardItem(imageName, uri));
+                                    if(cardItems.size() == listResult.getItems().size())
+                                    {
+                                        cardAdapter = new MeasureCardAdapter(cardItems, getContext(), editable);
+                                        recyclerView.setAdapter(cardAdapter);
+                                        dismissLoadingDialog();
+                                    }
+                                }
+                            });
+
+                        }
+                    }
+                });
+    }
+
     private void setValues(String cid) {
         showLoadingDialog();
         firebaseFirestore.collection("Customers").document(hash(firebaseAuth.getCurrentUser().getPhoneNumber()))
@@ -112,11 +133,11 @@ public class Measurements extends Fragment {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         for (DocumentSnapshot ds: queryDocumentSnapshots.getDocuments())
                         {
-                            MeasureCardItem mci = new MeasureCardItem(ds.get("Title").toString(),Integer.parseInt(ds.get("Image").toString()),
-                                    ds.get("Length").toString());
+                            MeasureCardItem mci = new MeasureCardItem(ds.get("Title").toString(), ds.get("Length").toString());
                             mci.setRemovable(Boolean.parseBoolean(ds.get("Removable").toString()));
+                            if(ds.get("ImageUrl") != null)
+                                mci.setImageUri(Uri.parse(ds.get("ImageUrl").toString()));
                             cardItems.add(mci);
-
                         }
                         cardAdapter = new MeasureCardAdapter(cardItems, getContext(), editable);
                         recyclerView.setAdapter(cardAdapter);
@@ -160,7 +181,7 @@ public class Measurements extends Fragment {
         {
             Map<String, Object> object1Map = new HashMap<>();
             object1Map.put("Title", mci.getTitle());
-            object1Map.put("Image", mci.getImageResId());
+            object1Map.put("ImageUrl", mci.getImageUri());
             object1Map.put("Removable", mci.isRemovable());
             object1Map.put("Length", mci.getLength());
             System.out.println(mci.getTitle() + " " + mci.getLength());

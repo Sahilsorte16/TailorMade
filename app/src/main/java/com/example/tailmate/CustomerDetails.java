@@ -34,6 +34,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,7 +44,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Permission;
@@ -52,7 +57,7 @@ public class CustomerDetails extends AppCompatActivity {
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 11;
     private static final int REQUEST_CODE_MANAGE_STORAGE_PERMISSION = 12;
     TextView name, phone, Gender;
-    ImageView call, msg, back, edit;
+    ImageView call, msg, back, edit, whatsapp;
     Button measurements, pdf;
     String Cid;
     FirebaseFirestore firebaseFirestore;
@@ -65,12 +70,18 @@ public class CustomerDetails extends AppCompatActivity {
         name = findViewById(R.id.name);
         phone = findViewById(R.id.phoneNumber);
         Gender = findViewById(R.id.gender);
+        whatsapp = findViewById(R.id.whatsapp);
         call = findViewById(R.id.call);
         msg = findViewById(R.id.msg);
         back = findViewById(R.id.back);
         edit = findViewById(R.id.edit);
         measurements = findViewById(R.id.body_measurements);
         pdf = findViewById(R.id.pdf);
+
+        Glide.with(CustomerDetails.this)
+                .load(getResources().getDrawable(R.drawable.whatsapp_logo))
+                .apply(RequestOptions.circleCropTransform())
+                .into(whatsapp);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -97,6 +108,23 @@ public class CustomerDetails extends AppCompatActivity {
                 i.putExtra("Name", in.getStringExtra("Name"));
                 i.putExtra("Cid", Cid);
                 startActivity(i);
+            }
+        });
+
+        whatsapp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean isUserWhatsAppInstalled = isWhatsAppInstalled();
+                boolean doesNumberHaveWhatsApp = doesNumberHaveWhatsApp(in.getStringExtra("Phone"));
+
+                System.out.println(isUserWhatsAppInstalled);
+                System.out.println(doesNumberHaveWhatsApp);
+
+                if (isUserWhatsAppInstalled && doesNumberHaveWhatsApp) {
+                    sendWhatsAppMessage(in.getStringExtra("Phone"), "");
+                } else {
+                    // Handle if WhatsApp is not installed for either the user or the customer
+                }
             }
         });
 
@@ -164,6 +192,38 @@ public class CustomerDetails extends AppCompatActivity {
             }
         });
 
+    }
+
+    private boolean isWhatsAppInstalled() {
+        PackageManager packageManager = getPackageManager();
+        try {
+            packageManager.getPackageInfo("com.whatsapp", PackageManager.GET_META_DATA);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    private boolean doesNumberHaveWhatsApp(String phoneNumber) {
+        PackageManager packageManager = getPackageManager();
+        Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + Uri.encode(phoneNumber)));
+        intent.setPackage("com.whatsapp");
+        return packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null;
+    }
+
+    private void sendWhatsAppMessage(String phoneNumber, String message) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/" + phoneNumber + "?text=" + urlEncodeString(message)));
+        startActivity(intent);
+    }
+
+    public String urlEncodeString(String input) {
+        try {
+            return URLEncoder.encode(input, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            // Handle the exception based on your application's requirements
+            return "";
+        }
     }
 
     private void fetchDetails() {

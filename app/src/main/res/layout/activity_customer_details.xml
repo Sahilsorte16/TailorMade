@@ -108,6 +108,15 @@
 
         <ImageButton
             android:layout_width="55dp"
+            android:id="@+id/whatsapp"
+            android:layout_height="55dp"
+            android:layout_marginEnd="40dp"
+            android:background="@drawable/icon_bg"
+            android:padding="10dp"
+            android:src="@drawable/whatsapp_logo" />
+
+        <ImageButton
+            android:layout_width="55dp"
             android:id="@+id/call"
             android:layout_height="55dp"
             android:layout_marginEnd="40dp"

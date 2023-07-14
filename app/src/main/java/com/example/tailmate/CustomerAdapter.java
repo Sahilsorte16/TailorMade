@@ -104,12 +104,28 @@ public class CustomerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, CustomerDetails.class);
-                    intent.putExtra("Name", c.getName());
-                    intent.putExtra("Phone", c.getMobileNumber());
-                    intent.putExtra("Gender", c.getGender());
-                    intent.putExtra("Cid", c.getCid());
-                    fragment.startActivityForResult(intent,178);
+
+                    if(fragment.getActivity() instanceof SelectCustomer)
+                    {
+                        Intent intent = new Intent(context, AddOrder.class);
+                        intent.putExtra("Name", c.getName());
+                        intent.putExtra("Phone", c.getMobileNumber());
+                        intent.putExtra("Gender", c.getGender());
+                        intent.putExtra("Cid", c.getCid());
+                        intent.putExtra("Activity", "Add Order");
+                        fragment.startActivityForResult(intent,871);
+                    }
+                    else
+                    {
+                        Intent intent = new Intent(context, CustomerDetails.class);
+                        intent.putExtra("Name", c.getName());
+                        intent.putExtra("Phone", c.getMobileNumber());
+                        intent.putExtra("Gender", c.getGender());
+                        intent.putExtra("Cid", c.getCid());
+
+                        fragment.startActivityForResult(intent,178);
+                    }
+
                 }
             });
         }

@@ -3,6 +3,7 @@ package com.example.tailmate;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -65,7 +68,6 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        System.out.println("Inside onCreateViewHolder");
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (editable && viewType == VIEW_TYPE_CARD) {
             View view = inflater.inflate(R.layout.measurement_card, parent, false);
@@ -85,7 +87,6 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        System.out.println("Inside onBindViewHolder");
         if (holder instanceof CardViewHolder) {
             MeasureCardItem cardItem = cardItems.get(position);
             ((CardViewHolder) holder).bind(cardItem,position);
@@ -227,14 +228,23 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public void bind(MeasureCardItem cardItem,int position) {
             textView.setText(cardItem.getTitle());
+            Uri uri = cardItem.getImageUri();
+            if(uri==null)
+            {
+                iv.setImageResource(cardItem.getImageResId());
+            }
+            else
+            {
+                Glide.with(context.getApplicationContext())
+                        .load(uri)
+                        .into(iv);
+            }
 
-            iv.setImageResource(cardItem.getImageResId());
             if(!cardItem.getLength().equals("0"))
                 length.setText(cardItem.getLength());
             else
                 length.setText("");
             cardItem.setEt(length);
-            System.out.println(cardItem.getEt().getText());
         }
 
         public EditText getEditText(){return length;}
@@ -262,7 +272,17 @@ public class MeasureCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public void bind(MeasureCardItem cardItem) {
             bmt.setText(cardItem.getTitle());
-            imv.setImageResource(cardItem.getImageResId());
+            Uri uri = cardItem.getImageUri();
+            if(uri==null)
+            {
+                imv.setImageResource(cardItem.getImageResId());
+            }
+            else
+            {
+                Glide.with(context.getApplicationContext())
+                        .load(uri)
+                        .into(imv);
+            }
             len.setText(cardItem.getLength());
         }
     }
