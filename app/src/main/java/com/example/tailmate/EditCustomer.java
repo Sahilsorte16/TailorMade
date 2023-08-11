@@ -8,6 +8,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -101,7 +103,29 @@ public class EditCustomer extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
+                AnimatorSet animatorSet = Animations.backAnimation(back);
+                animatorSet.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(@NonNull Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(@NonNull Animator animator) {
+                        onBackPressed();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(@NonNull Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(@NonNull Animator animator) {
+
+                    }
+                });
+                animatorSet.start();
             }
         });
 

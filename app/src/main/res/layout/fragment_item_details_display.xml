@@ -36,6 +36,19 @@
             android:textAlignment="center"/>
 
         <TextView
+            android:id="@+id/itemQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quantity: "
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/itemType"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="30dp"
+            android:textSize="15dp"
+            android:textAlignment="center"/>
+
+        <TextView
             android:id="@+id/instructionsText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,7 +56,7 @@
             android:background="@color/bg_grey"
             android:layout_alignParentEnd="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@id/itemType"
+            android:layout_below="@id/itemQuantity"
             android:layout_marginTop="10dp"
             android:textSize="18dp"
             android:textAlignment="center"/>
@@ -124,7 +137,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginVertical="3dp"
             android:layout_marginEnd="60dp"
-            android:text="\u20B9 60"
+            android:text="\u20B9 0"
             android:textStyle="bold"
             android:textColor="#2BE832"
             android:textSize="18dp" />

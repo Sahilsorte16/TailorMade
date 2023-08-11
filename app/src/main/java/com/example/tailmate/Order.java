@@ -20,7 +20,7 @@ public class Order implements Parcelable {
     private Customer customer;
     private Map<String,String> dates;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
-    private boolean Urgent;
+    private boolean Urgent, Pending;
 
     public Order(){}
 
@@ -127,5 +127,13 @@ public class Order implements Parcelable {
 
     public Map<String, String> getDates() {
         return dates;
+    }
+
+    public boolean isPending() {
+        return Pending;
+    }
+
+    public void setPending(boolean pending) {
+        Pending = pending;
     }
 }

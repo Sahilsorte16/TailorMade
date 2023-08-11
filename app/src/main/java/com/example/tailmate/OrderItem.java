@@ -2,14 +2,14 @@ package com.example.tailmate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import android.util.Pair;
 
-import kotlin.Pair;
+import androidx.annotation.NonNull;
 
-public class OrderItem {
-    private String id, name, type, charges, totalItemCharges;
+public class OrderItem implements Cloneable{
+    private String id, name, type, charges, totalItemCharges, quantity;
     private Map<String,String> bodyMs;
 
     private List<Pair<String,String>> expenses;
@@ -25,6 +25,12 @@ public class OrderItem {
         PatternImages = new ArrayList<>();
         DressImages = new ArrayList<>();
         totalItemCharges = charges;
+    }
+
+    @NonNull
+    @Override
+    protected OrderItem clone() throws CloneNotSupportedException {
+        return (OrderItem) super.clone();
     }
 
     public String getName() {
@@ -117,11 +123,11 @@ public class OrderItem {
         }
     }
 
-    public List<Pair<String, String>> getExpenses() {
+    public List<Pair<String,String>> getExpenses() {
         return expenses;
     }
 
-    public void setExpenses(List<Pair<String, String>> expenses) {
+    public void setExpenses(List<Pair<String,String>> expenses) {
         this.expenses = expenses;
     }
 
@@ -155,5 +161,13 @@ public class OrderItem {
 
     public String getId() {
         return id;
+    }
+
+    public String getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
     }
 }

@@ -77,11 +77,24 @@
             android:textSize="15dp"
             android:textAlignment="center"/>
 
+        <TextView
+            android:id="@+id/itemQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quantity: "
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/itemType"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="30dp"
+            android:textSize="15dp"
+            android:textAlignment="center"/>
+
         <LinearLayout
             android:id="@+id/addInstruction"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/itemType"
+            android:layout_below="@+id/itemQuantity"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_marginHorizontal="30dp"
@@ -114,32 +127,34 @@
             android:layout_marginHorizontal="30dp"/>
 
         <TextView
-            android:id="@+id/stitchName"
+            android:id="@+id/totalRateText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/recyclerView"
             android:layout_alignParentStart="true"
-            android:layout_marginBottom="12dp"
+            android:layout_marginVertical="3dp"
             android:layout_marginStart="60dp"
-            android:text="Stitching Charges"
-            android:textSize="17dp"/>
+            android:text="Total Rate"
+            android:textStyle="italic"
+            android:textSize="18dp"/>
 
         <TextView
-            android:id="@+id/stitchCharges"
+            android:id="@+id/totalRate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/recyclerView"
             android:layout_alignParentEnd="true"
-            android:layout_marginBottom="12dp"
+            android:layout_marginVertical="3dp"
             android:layout_marginEnd="60dp"
-            android:text="\u20B9 60"
-            android:textSize="17dp" />
+            android:text="\u20B9 0"
+            android:textStyle="bold"
+            android:textSize="18dp" />
 
         <TextView
             android:id="@+id/totalText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/stitchName"
+            android:layout_below="@+id/totalRateText"
             android:layout_alignParentStart="true"
             android:layout_marginVertical="3dp"
             android:layout_marginStart="60dp"
@@ -151,11 +166,11 @@
             android:id="@+id/totalCharges"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/stitchCharges"
+            android:layout_below="@+id/totalRate"
             android:layout_alignParentEnd="true"
             android:layout_marginVertical="3dp"
             android:layout_marginEnd="60dp"
-            android:text="\u20B9 60"
+            android:text="\u20B9 0"
             android:textStyle="bold"
             android:textColor="#2BE832"
             android:textSize="18dp" />

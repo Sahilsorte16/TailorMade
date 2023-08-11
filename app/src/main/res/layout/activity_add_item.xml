@@ -133,9 +133,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginHorizontal="30dp"/>
 
-
             <TextView
-                android:id="@+id/deliverText"
+                android:id="@+id/QuantityText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/recyclerView"
@@ -145,46 +144,86 @@
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="27dp"
                 android:textSize="18dp"
-                android:text="Charges" />
+                android:text="Quantity and Rate" />
 
             <LinearLayout
-                android:id="@+id/Charges"
+                android:id="@+id/QuantityandPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_below="@+id/deliverText"
+                android:layout_below="@+id/QuantityText"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginHorizontal="30dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/layout_thin_border">
+                android:layout_marginEnd="80dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="5dp">
 
-                <ImageView
-                    android:id="@+id/imageViewCalendar"
+                <LinearLayout
+                    android:id="@+id/quantityLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/baseline_currency_rupee_24"
-                    android:layout_margin="10dp"/>
+                    android:background="@drawable/layout_thin_border">
 
-                <EditText
-                    android:id="@+id/editTextCharges"
+                    <EditText
+                        android:id="@+id/editTextQuantity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:textSize="18dp"
+                        android:text="1"
+                        android:hint="Qty." />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/Charges"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:textSize="18dp"
-                    android:hint="Rupees" />
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="20dp"
+                    android:background="@drawable/layout_thin_border">
+
+                    <ImageView
+                        android:id="@+id/imageViewCalendar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_currency_rupee_24"
+                        android:layout_margin="10dp"/>
+
+                    <EditText
+                        android:id="@+id/editTextCharges"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:textSize="18dp"
+                        android:hint="Rate" />
+                </LinearLayout>
+
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/totalCharges"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Total Item Charges:    \u20b9 0"
+                android:textSize="16dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/QuantityandPrice"/>
             <TextView
                 android:id="@+id/Charges_in_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/Charges"
+                android:layout_below="@+id/totalCharges"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginHorizontal="150dp"
                 android:layout_marginStart="30dp"
                 android:textSize="14dp"
                 android:text="" />

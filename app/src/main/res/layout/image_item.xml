@@ -26,7 +26,8 @@
         android:textSize="20dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:text="Content of 3 lines \n\n" />
+        android:textAlignment="center"
+        android:text="Where Tradition Meets Innovation, Seamlessly Managing Customers and Orders! \n\n" />
 
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"

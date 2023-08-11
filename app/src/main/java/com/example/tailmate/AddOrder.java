@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
@@ -13,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -28,6 +31,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.common.reflect.TypeToken;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -38,7 +42,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -132,7 +138,29 @@ public class AddOrder extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
+                AnimatorSet animatorSet = Animations.backAnimation(back);
+                animatorSet.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(@NonNull Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(@NonNull Animator animator) {
+                        onBackPressed();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(@NonNull Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(@NonNull Animator animator) {
+
+                    }
+                });
+                animatorSet.start();
             }
         });
         save.setOnClickListener(new View.OnClickListener() {
@@ -206,11 +234,18 @@ public class AddOrder extends AppCompatActivity {
             orderItem.setName(data.getStringExtra("Item Name"));
             orderItem.setType(data.getStringExtra("Item type"));
             orderItem.setCharges(data.getStringExtra("Charges"));
+            orderItem.setQuantity(data.getStringExtra("Quantity"));
+            Gson gson = new Gson();
+            String json = data.getStringExtra("Expenses");
+            Type listType = new TypeToken<List<Pair<String, String>>>() {}.getType();
+            orderItem.setExpenses(gson.fromJson(json, listType));
+            orderItem.setComplete(data.getBooleanExtra("isComplete", false));
             orderItem.setTotalItemCharges(data.getStringExtra("Total amount"));
             orderItem.setBodyMs((Map<String, String>) data.getSerializableExtra("Body Measurements"));
             orderItem.setInstructions(data.getStringArrayListExtra("Instructions"));
             orderItem.setClothImages((ArrayList<byte[]>) data.getSerializableExtra("Cloth Images"));
             orderItem.setPatternImages((ArrayList<byte[]>) data.getSerializableExtra("Pattern Images"));
+            orderItem.setDressImages((ArrayList<byte[]>) data.getSerializableExtra("Dress Images"));
             orderItem.print();
 
             if(data.getIntExtra("LayoutPosition",-1)!=-1)
@@ -334,7 +369,7 @@ public class AddOrder extends AppCompatActivity {
         addition.put("Cid", Cid);
         addition.put("Delivery Date", Date);
         addition.put("Urgent", Urgent);
-        addition.put("Status", "Upcoming");
+
         addition.put("Total Amount", totalAmt.getText().toString());
 
         if(header.getText().equals("Edit Order"))
@@ -345,12 +380,14 @@ public class AddOrder extends AppCompatActivity {
                     Map<String,String> dates = new HashMap<>();
                     dates = (Map<String, String>) documentSnapshot.get("Dates");
                     addition.put("Dates", dates);
+                    addition.put("Status", documentSnapshot.get("Status").toString());
                     proceedUpdation1(addition);
                 }
             });
         }
         else
         {
+            addition.put("Status", "Upcoming");
             Map<String,String> dates = new HashMap<>();
             dates.put("Received", dateFormat.format(currentDate));
             dates.put("Prepare Order", null);
@@ -373,7 +410,7 @@ public class AddOrder extends AppCompatActivity {
 
         for(int i=0; i<list.size(); i++)
         {
-            totalImageUploads += list.get(i).getPatternImages().size() + list.get(i).getClothImages().size();
+            totalImageUploads += list.get(i).getPatternImages().size() + list.get(i).getClothImages().size() + list.get(i).getDressImages().size();
         }
         totalItems = list.size();
 
@@ -384,6 +421,7 @@ public class AddOrder extends AppCompatActivity {
                 for(int i=0; i<list.size(); i++)
                 {
                     int k = 1;
+                    System.out.println("Size : " + list.get(i).getDressImages().size());
                     for(byte[] arr: list.get(i).getClothImages())
                     {
                         sref.child("Item " + String.valueOf(i+1)).child("Cloth " + String.valueOf(k++)).putBytes(arr)
@@ -412,13 +450,28 @@ public class AddOrder extends AppCompatActivity {
                                 });
                     }
 
+                    k=1;
+                    for(byte[] arr: list.get(i).getDressImages())
+                    {
+                        sref.child("Item " + String.valueOf(i+1)).child("Dress " + String.valueOf(k++)).putBytes(arr)
+                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                        completedImageUploads++;
+                                        if(completedImageUploads==totalImageUploads)
+                                            checkCompletion();
+                                    }
+                                });
+                    }
+
                     Map<String,Object> m = new HashMap<>();
                     m.put("Item Name", list.get(i).getName());
                     m.put("Item Type", list.get(i).getType());
                     m.put("Charges", list.get(i).getCharges());
-                    m.put("Total amount", list.get(i).getCharges());
-                    m.put("Expenses", null);
-                    m.put("isComplete", false);
+                    m.put("Quantity", list.get(i).getQuantity());
+                    m.put("Total amount", list.get(i).getTotalItemCharges());
+                    m.put("Expenses", list.get(i).getExpenses());
+                    m.put("isComplete", list.get(i).isComplete());
                     m.put("Instructions", list.get(i).getInstructions());
                     m.put("Body Measurements", list.get(i).getBodyMs());
 
@@ -509,7 +562,18 @@ public class AddOrder extends AppCompatActivity {
                             orderItem.setName((String) ds.get("Item Name"));
                             orderItem.setType((String) ds.get("Item Type"));
                             orderItem.setInstructions((List<String>) ds.get("Instructions"));
+                            if(ds.get("Expenses")!=null){
+                                List<Pair<String,String>> list = new ArrayList<>();
+                                for(HashMap object: (List<HashMap<String, String>>)ds.get("Expenses"))
+                                {
+                                    System.out.println(object.getClass().getName());
+                                    list.add(new Pair<>(object.get("first").toString(), object.get("second").toString()));
+                                }
+                                orderItem.setExpenses(list);
+                            }
+                            orderItem.setComplete((Boolean) ds.get("isComplete"));
                             orderItem.setCharges((String) ds.get("Charges"));
+                            orderItem.setQuantity((String) ds.get("Quantity"));
                             orderItem.setTotalItemCharges((String) ds.get("Total amount"));
                             orderItem.setBodyMs((Map<String, String>) ds.get("Body Measurements"));
 
@@ -518,7 +582,7 @@ public class AddOrder extends AppCompatActivity {
                                 public void onSuccess(ListResult listResult) {
                                     ArrayList<byte[]> cloths = new ArrayList<>();
                                     ArrayList<byte[]> pattern = new ArrayList<>();
-
+                                    ArrayList<byte[]> dress = new ArrayList<>();
                                     for(StorageReference item : listResult.getItems())
                                     {
                                         item.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
@@ -529,15 +593,20 @@ public class AddOrder extends AppCompatActivity {
                                                 {
                                                     cloths.add(bytes);
                                                 }
-                                                else
+                                                else if(itemName.contains("Pattern"))
                                                 {
                                                     pattern.add(bytes);
                                                 }
+                                                else
+                                                {
+                                                    dress.add(bytes);
+                                                }
 
-                                                if(cloths.size() + pattern.size() == listResult.getItems().size())
+                                                if(cloths.size() + pattern.size() + dress.size() == listResult.getItems().size())
                                                 {
                                                     orderItem.setPatternImages(pattern);
                                                     orderItem.setClothImages(cloths);
+                                                    orderItem.setDressImages(dress);
 
                                                     itemlistadaptor.addItem(orderItem);
                                                     if(itemlistadaptor.getItemCount()==queryDocumentSnapshots.getDocuments().size())

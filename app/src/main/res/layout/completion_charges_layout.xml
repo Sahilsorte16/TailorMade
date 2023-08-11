@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/layoutNotify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true">
+
+        <TextView
+            android:id="@+id/textNotify"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:text="Notify the customer of order completion."
+            android:textSize="19dp"
+            android:textStyle="bold|italic|normal"
+            android:layout_marginTop="8dp"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/notify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="3dp"
+            android:src="@drawable/baseline_notifications_none_24"
+            android:layout_marginBottom="10dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutNotifyHidden"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="90dp">
+
+        <ImageButton
+            android:layout_width="45dp"
+            android:id="@+id/whatsapp"
+            android:layout_height="45dp"
+            android:layout_marginEnd="40dp"
+            android:background="@drawable/icon_bg"
+            android:visibility="invisible"
+            android:padding="10dp"
+            android:src="@drawable/whatsapp_logo" />
+
+        <ImageButton
+            android:layout_width="45dp"
+            android:id="@+id/call"
+            android:layout_height="45dp"
+            android:layout_marginEnd="40dp"
+            android:visibility="invisible"
+            android:background="@drawable/icon_bg"
+            android:src="@drawable/baseline_phone_24" />
+
+        <ImageButton
+            android:layout_width="45dp"
+            android:id="@+id/message"
+            android:layout_height="45dp"
+            android:background="@drawable/icon_bg"
+            android:visibility="invisible"
+            android:src="@drawable/baseline_message_24" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/rule1"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@+id/layoutNotify"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="5dp"
+        android:background="@color/bg_grey"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:id="@+id/summary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Payment Summary"
+        android:layout_marginTop="5dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textSize="20dp"
+        android:layout_below="@id/layoutNotify"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/summary"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:id="@+id/orderItemList"/>
+
+    <View
+        android:id="@+id/rule"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@+id/orderItemList"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:background="@color/bg_grey"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:id="@+id/totalText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rule"
+        android:layout_alignParentStart="true"
+        android:layout_marginVertical="3dp"
+        android:layout_marginStart="30dp"
+        android:text="Amount Pending"
+        android:textStyle="italic|bold"
+        android:textSize="18dp"/>
+
+    <TextView
+        android:id="@+id/amountPending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rule"
+        android:layout_alignParentEnd="true"
+        android:layout_marginVertical="3dp"
+        android:layout_marginEnd="80dp"
+        android:text="\u20B9 0"
+        android:textStyle="bold"
+        android:textColor="#3DC542"
+        android:textSize="18dp" />
+
+    <View
+        android:id="@+id/rule2"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@+id/amountPending"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:background="@color/bg_grey"
+        android:layout_alignParentEnd="true"/>
+
+    <Button
+        android:id="@+id/payment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rule2"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/icon_bg"
+        android:text="Take Payment" />
+
+    <Button
+        android:id="@+id/bill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/payment"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="16dp"
+        android:background="@drawable/icon_bg"
+        android:text="Generate BILL" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bill"
+        android:layout_marginTop="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:id="@+id/goBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="30dp"
+            android:src="@drawable/baseline_arrow_back_ios_new_24"
+            android:background="@drawable/prof_bg"
+            android:padding="10dp"/>
+
+        <ImageView
+            android:id="@+id/goAhead"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="30dp"
+            android:src="@drawable/baseline_arrow_forward_ios_24"
+            android:background="@drawable/prof_bg"
+            android:padding="10dp"/>
+    </RelativeLayout>
+
+
+</RelativeLayout>

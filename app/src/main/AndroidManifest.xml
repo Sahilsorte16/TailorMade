@@ -28,6 +28,16 @@
         android:theme="@style/Theme.TailMate"
         tools:targetApi="31">
         <activity
+            android:name=".PaymentHistory"
+            android:exported="false" />
+        <activity
+            android:name=".Bill_Signature"
+            android:exported="false" />
+        <activity
+            android:name=".QRDisplay"
+            android:exported="false"
+            android:theme="@style/CustomDialogTheme1" />
+        <activity
             android:name=".PrepareOrder"
             android:exported="false" />
         <activity

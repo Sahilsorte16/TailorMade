@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Html;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +36,7 @@ import java.util.Map;
 
 public class ItemDetailsDisplay extends Fragment {
 
-    TextView name, type, totalCharges;
+    TextView name, type, totalCharges, quantity;
     RecyclerView bms, instructions, clothes, patterns, dresses, charges;
     List<String> Instructions;
     List<Bitmap> ClothImages, PatternImages, DressImages;
@@ -60,6 +61,7 @@ public class ItemDetailsDisplay extends Fragment {
         dresses = v.findViewById(R.id.dresses);
         charges = v.findViewById(R.id.Charges);
         totalCharges = v.findViewById(R.id.totalCharges);
+        quantity = v.findViewById(R.id.itemQuantity);
 
         bms.setLayoutManager(new LinearLayoutManager(getContext()));
         instructions.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -82,29 +84,24 @@ public class ItemDetailsDisplay extends Fragment {
         Intent in = getActivity().getIntent();
         name.setText(in.getStringExtra("Item Name"));
         type.setText(in.getStringExtra("Item Type"));
+        quantity.setText("Quantity: " + in.getStringExtra("Quantity"));
         Instructions = in.getStringArrayListExtra("Instructions");
-
         ClothImages =  byteToBitmap((ArrayList<byte[]>) in.getSerializableExtra("Cloth Images"));
         PatternImages = byteToBitmap((ArrayList<byte[]>) in.getSerializableExtra("Pattern Images"));
         DressImages = byteToBitmap((ArrayList<byte[]>) in.getSerializableExtra("Dress Images"));
-
         bodyMs = (Map<String, String>) in.getSerializableExtra("Body Measurements");
 
         Gson gson = new Gson();
         String json = in.getStringExtra("Expenses");
         Type listType = new TypeToken<List<Pair<String,String>>>() {}.getType();
         expenses = gson.fromJson(json, listType);
-        expenses.add(new Pair<>(type.getText().toString() + " Charges", in.getStringExtra("Charges")));
 
+        long e = Integer.parseInt(in.getStringExtra("Total amount")), q = Integer.parseInt(in.getStringExtra("Quantity"));
+        String str = String.valueOf(Html.fromHtml("<b>" + String.valueOf(e/q) + "</b>"));
         expensesAdaptor = new ExpensesAdaptor(expenses, getContext(), getActivity());
+        expensesAdaptor.addExpense(Html.fromHtml("<i> Total rate </i>").toString(), str);
         charges.setAdapter(expensesAdaptor);
-
-        long ttl=0;
-        for(Pair<String,String> p: expensesAdaptor.getExpenses())
-        {
-            ttl += Integer.parseInt(p.second);
-        }
-        totalCharges.setText("\u20B9 " + String.valueOf(ttl));
+        totalCharges.setText("\u20B9 " + in.getStringExtra("Total amount"));
 
         InstructionsAdapter instructionsAdapter = new InstructionsAdapter(Instructions, getActivity());
         instructions.setAdapter(instructionsAdapter);

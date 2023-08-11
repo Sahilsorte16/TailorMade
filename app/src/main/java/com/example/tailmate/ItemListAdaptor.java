@@ -1,5 +1,7 @@
 package com.example.tailmate;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -60,57 +62,29 @@ public class ItemListAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolde
         cardViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(activity instanceof AddOrder)
-                {
-                    Intent intent = new Intent(context, Add_Item.class);
-                    intent.putExtra("Cid", ((AddOrder) activity).Cid);
-                    intent.putExtra("activity","Edit Item");
-                    intent.putExtra("LayoutPosition", holder.getLayoutPosition());
-                    intent.putExtra("Item Name", orderItem.getName());
-                    intent.putExtra("Item type", orderItem.getType());
-                    intent.putExtra("Body Measurements", (Serializable) orderItem.getBodyMs());
-                    intent.putExtra("Charges", orderItem.getCharges());
-                    intent.putStringArrayListExtra("Instructions", (ArrayList<String>) orderItem.getInstructions());
-                    intent.putExtra("Cloth Images", orderItem.getClothImages());
-                    intent.putExtra("Pattern Images", orderItem.getPatternImages());
-                    activity.startActivityForResult(intent, 123);
-                }
-                else if(activity instanceof OrderDetails)
-                {
-                    if(b)
-                    {
-                        Intent intent = new Intent(context, OrderItemDetails.class);
-                        intent.putExtra("Item Name", orderItem.getName());
-                        intent.putExtra("Item Type", orderItem.getType());
-                        intent.putExtra("Body Measurements", (Serializable) orderItem.getBodyMs());
-                        intent.putExtra("Charges", orderItem.getCharges());
-                        intent.putExtra("Total amount", orderItem.getTotalItemCharges());
-                        intent.putStringArrayListExtra("Instructions", (ArrayList<String>) orderItem.getInstructions());
-                        Gson gson = new Gson();
-                        String json = gson.toJson(orderItem.getExpenses());
-                        intent.putExtra("Expenses",  json);
-                        intent.putExtra("Dress Images", orderItem.getDressImages());
-                        intent.putExtra("Cloth Images", orderItem.getClothImages());
-                        intent.putExtra("Pattern Images", orderItem.getPatternImages());
-                        activity.startActivity(intent);
+                AnimatorSet animatorSet = Animations.goInAnimation(holder);
+                animatorSet.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(@NonNull Animator animator) {
+
                     }
-                    else
-                    {
-                        Intent intent = new Intent(context, PrepareOrder.class);
-                        intent.putExtra("Item Name", orderItem.getName());
-                        intent.putExtra("Item Type", orderItem.getType());
-                        intent.putExtra("Charges", orderItem.getCharges());
-                        intent.putExtra("Complete", orderItem.isComplete());
-                        intent.putExtra("LayoutPosition", holder.getLayoutPosition());
-                        intent.putExtra("Total amount", orderItem.getTotalItemCharges());
-                        intent.putExtra("Id", orderItem.getId());
-                        Gson gson = new Gson();
-                        String json = gson.toJson(orderItem.getExpenses());
-                        intent.putExtra("Expenses",  json);
-                        intent.putExtra("Dress Images", orderItem.getDressImages());
-                        activity.startActivityForResult(intent, 456);
+
+                    @Override
+                    public void onAnimationEnd(@NonNull Animator animator) {
+                        callActivities(holder, orderItem);
                     }
-                }
+
+                    @Override
+                    public void onAnimationCancel(@NonNull Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(@NonNull Animator animator) {
+
+                    }
+                });
+                animatorSet.start();
             }
         });
 
@@ -121,6 +95,71 @@ public class ItemListAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 return true;
             }
         });
+    }
+
+    public void callActivities(RecyclerView.ViewHolder holder, OrderItem orderItem)
+    {
+        if(activity instanceof AddOrder)
+        {
+            Intent intent = new Intent(context, Add_Item.class);
+            intent.putExtra("Cid", ((AddOrder) activity).Cid);
+            intent.putExtra("activity","Edit Item");
+            intent.putExtra("LayoutPosition", holder.getLayoutPosition());
+            intent.putExtra("Item Name", orderItem.getName());
+            intent.putExtra("isComplete", orderItem.isComplete());
+            Gson gson = new Gson();
+            String json = gson.toJson(orderItem.getExpenses());
+            intent.putExtra("Expenses",  json);
+            intent.putExtra("Quantity", orderItem.getQuantity());
+            intent.putExtra("Item type", orderItem.getType());
+            intent.putExtra("Body Measurements", (Serializable) orderItem.getBodyMs());
+            intent.putExtra("Charges", orderItem.getCharges());
+            intent.putStringArrayListExtra("Instructions", (ArrayList<String>) orderItem.getInstructions());
+            intent.putExtra("Cloth Images", orderItem.getClothImages());
+            intent.putExtra("Pattern Images", orderItem.getPatternImages());
+            intent.putExtra("Dress Images", orderItem.getDressImages());
+            activity.startActivityForResult(intent, 123);
+        }
+        else if(activity instanceof OrderDetails)
+        {
+            if(b)
+            {
+                Intent intent = new Intent(context, OrderItemDetails.class);
+                intent.putExtra("Item Name", orderItem.getName());
+                intent.putExtra("Item Type", orderItem.getType());
+                intent.putExtra("Body Measurements", (Serializable) orderItem.getBodyMs());
+                intent.putExtra("Charges", orderItem.getCharges());
+                intent.putExtra("Quantity", orderItem.getQuantity());
+                intent.putExtra("Total amount", orderItem.getTotalItemCharges());
+                intent.putExtra("isComplete", orderItem.isComplete());
+                intent.putStringArrayListExtra("Instructions", (ArrayList<String>) orderItem.getInstructions());
+                Gson gson = new Gson();
+                String json = gson.toJson(orderItem.getExpenses());
+                intent.putExtra("Expenses",  json);
+                intent.putExtra("Dress Images", orderItem.getDressImages());
+                intent.putExtra("Cloth Images", orderItem.getClothImages());
+                intent.putExtra("Pattern Images", orderItem.getPatternImages());
+                activity.startActivity(intent);
+            }
+            else
+            {
+                Intent intent = new Intent(context, PrepareOrder.class);
+                intent.putExtra("Item Name", orderItem.getName());
+                intent.putExtra("Item Type", orderItem.getType());
+                intent.putExtra("Charges", orderItem.getCharges());
+                intent.putExtra("Quantity", orderItem.getQuantity());
+                intent.putExtra("Complete", orderItem.isComplete());
+                intent.putExtra("LayoutPosition", holder.getLayoutPosition());
+                intent.putExtra("isComplete", orderItem.isComplete());
+                intent.putExtra("Total amount", orderItem.getTotalItemCharges());
+                intent.putExtra("Id", orderItem.getId());
+                Gson gson = new Gson();
+                String json = gson.toJson(orderItem.getExpenses());
+                intent.putExtra("Expenses",  json);
+                intent.putExtra("Dress Images", orderItem.getDressImages());
+                activity.startActivityForResult(intent, 456);
+            }
+        }
     }
 
     @Override
@@ -142,7 +181,16 @@ public class ItemListAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public List<OrderItem> getOrderItems()
     {
-        return list;
+        List<OrderItem> ans = new ArrayList<>();
+        for(OrderItem o: list)
+        {
+            try {
+                ans.add(o.clone());
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return ans;
     }
     public OrderItem getItem(int position)
     {

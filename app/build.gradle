@@ -49,5 +49,7 @@ dependencies {
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.4'
     implementation 'com.github.funriser:StepProgress:0.1.0'
     implementation 'com.ernestoyaquello.stepperform:vertical-stepper-form:2.7.0'
+    implementation 'com.google.zxing:core:3.3.3'
+    implementation 'com.github.gcacace:signature-pad:1.3.1'
 
 }

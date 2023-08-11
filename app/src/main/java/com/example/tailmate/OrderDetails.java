@@ -1,10 +1,13 @@
 package com.example.tailmate;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.reflect.TypeToken;
@@ -33,7 +37,9 @@ import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +53,7 @@ import ernestoyaquello.com.verticalstepperform.listener.StepperFormListener;
 public class OrderDetails extends AppCompatActivity implements StepperFormListener{
 
     private static final int CUSTOMER_UPDATED = 109;
-    TextView orderName, orderId, CName, CNumber, CGender, date, totalAmt;
+    static TextView orderName, orderId, CName, CNumber, CGender, date, totalAmt;
     ImageView back, menu, ahead;
     RelativeLayout customerDetails;
     RecyclerView recyclerView, recyclerView2;
@@ -56,14 +62,17 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
     FirebaseFirestore firebaseFirestore;
     FirebaseStorage firebaseStorage;
     private Steps received;
-    private Steps userEmailStep;
-    private Steps userAgeStep;
+    static CompletionPayment completionPayment;
 
     public static VerticalStepperFormView verticalStepperForm;
     static Order order;
     static ItemListAdaptor itemlistadaptor;
     private AtWork inProgess;
+
+    private DeliveryView deliveryView;
     static ItemListAdaptor itemlistadaptor2;
+    static CostDisplayItemView costDisplayItemView;
+    private String totalOrderCharges;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,14 +97,16 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
 
         received = new Steps("Received");
         inProgess = new AtWork("Prepare Order");
-
-
+        completionPayment = new CompletionPayment("Payment", OrderDetails.this, getSupportFragmentManager());
+        deliveryView = new DeliveryView("Delivered");
         verticalStepperForm
-                .setup((StepperFormListener) OrderDetails.this, received, inProgess)
+                .setup((StepperFormListener) OrderDetails.this, received, inProgess, completionPayment,deliveryView)
                 .basicColorScheme(getColor(R.color.default_dark), getColor(R.color.bg_grey), getColor(R.color.white))
+                .includeConfirmationStep(false)
                 .displayBottomNavigation(false)
                 .displayStepButtons(false)
                 .allowStepOpeningOnHeaderClick(false)
+                .closeLastStepOnCompletion(true)
                 .init();
 
         recyclerView2 = verticalStepperForm.getStepContentLayout(1).findViewById(R.id.recyclerView2);
@@ -125,7 +136,29 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
+                AnimatorSet animatorSet = Animations.backAnimation(back);
+                animatorSet.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(@NonNull Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(@NonNull Animator animator) {
+                        onBackPressed();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(@NonNull Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(@NonNull Animator animator) {
+
+                    }
+                });
+                animatorSet.start();
             }
         });
 
@@ -157,7 +190,9 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
                         // Handle the Print option
                         return true;
                     case R.id.menu_expenses:
-                        // Handle the Expenses option
+                        Intent intent = new Intent(OrderDetails.this, PaymentHistory.class);
+                        intent.putExtra("Total Charges", totalOrderCharges);
+                        startActivityForResult(intent, 321);
                         return true;
                     default:
                         return false;
@@ -176,6 +211,23 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
             {
                 fetchDetails();
             }
+            else if(requestCode==143)
+            {
+                completionPayment.signBill(data.getByteArrayExtra("Sign"));
+            }
+            else if(requestCode==45)
+            {
+                afterReceivingPayment(data);
+            }
+            else if(requestCode==321)
+            {
+                for(Payment p: paymentList)
+                    System.out.println(p.amount + p.getName());
+
+                costDisplayItemView.setUpnewPays(paymentList);
+                order.setCharges(costDisplayItemView.makeAmountOf());
+                completionPayment.amtPending.setText("\u20B9 " + order.getCharges());
+            }
             else if(requestCode==456)
             {
                 String totalCharges = data.getStringExtra("Total Charges");
@@ -184,7 +236,7 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
                 Gson gson = new Gson();
                 String json = data.getStringExtra("Expenses");
                 Type listType = new TypeToken<List<Pair<String, String>>>() {}.getType();
-                List<kotlin.Pair<String, String>> expenses = gson.fromJson(json, listType);
+                List<Pair<String, String>> expenses = gson.fromJson(json, listType);
                 int pos = data.getIntExtra("Position", -1);
                 String id = data.getStringExtra("Id");
 
@@ -197,13 +249,15 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
                     orderItem.setComplete(isCompleted);
                     itemlistadaptor.updateItem(orderItem,pos);
                     itemlistadaptor2.updateItem(orderItem,pos);
-                    totalAmt.setText("₹ " + itemlistadaptor.makeAmount());
+                    totalOrderCharges = String.valueOf(itemlistadaptor.makeAmount());
+                    totalAmt.setText("₹ " + totalOrderCharges);
 
                     Map<String,Object> m = new HashMap<>();
                     m.put("Item Name", orderItem.getName());
                     m.put("Item Type", orderItem.getType());
                     m.put("Charges", orderItem.getCharges());
                     m.put("Total amount", orderItem.getTotalItemCharges());
+                    m.put("Quantity", orderItem.getQuantity());
                     m.put("Expenses", orderItem.getExpenses());
                     m.put("isComplete", orderItem.isComplete());
                     m.put("Instructions",orderItem.getInstructions());
@@ -220,6 +274,7 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
                                         dismissLoadingDialog();
 
                                     checkCanGoAhead();
+                                    setUpCompletionLayout();
                                 }
                             });
                 }
@@ -266,6 +321,10 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
                                         order = new Order(ds.getId(), ds.get("Order Name").toString(), status
                                                 , LocalDate.parse(ds.get("Delivery Date").toString(), formatter), customer);
                                         order.setUrgent((Boolean) ds.get("Urgent"));
+                                        if(ds.get("Pending")==null)
+                                            order.setPending(false);
+                                        else
+                                            order.setPending((Boolean) ds.get("Pending"));
                                         order.setCharges(ds.get("Total Amount").toString());
                                         order.setDates((Map<String,String>)ds.get("Dates"));
                                         orderName.setText(order.getOrderName());
@@ -285,6 +344,11 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
     }
 
     private void goToRightStep(String status) {
+
+        for(int i=0; i< verticalStepperForm.getTotalNumberOfSteps(); i++)
+        {
+            verticalStepperForm.markStepAsUncompleted(i,"", false);
+        }
         int stayAt = 0;
         if(status.equals("Upcoming"))
             stayAt = 0;
@@ -292,8 +356,13 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
             stayAt = 1;
         else if(status.equals("Completed"))
             stayAt = 2;
-        else if(status.equals("Delivered"))
+        else if(status.equals("Delivered") && order.isPending())
             stayAt = 3;
+        else
+        {
+            verticalStepperForm.completeForm();
+            stayAt=4;
+        }
 
         for(int i=0; i<stayAt; i++)
         {
@@ -326,10 +395,26 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
                             orderItem.setType((String) ds.get("Item Type"));
                             orderItem.setInstructions((List<String>) ds.get("Instructions"));
                             orderItem.setCharges((String) ds.get("Charges"));
-                            orderItem.setComplete((boolean) ds.get("isComplete"));
+                            orderItem.setQuantity((String) ds.get("Quantity"));
+                            orderItem.setComplete((Boolean) ds.get("isComplete"));
                             orderItem.setTotalItemCharges((String) ds.get("Total amount"));
-                            if(ds.get("Expenses")!=null)
-                                orderItem.setExpenses((List<kotlin.Pair<String, String>>) ds.get("Expenses"));
+                            List<Pair<String,String>> list = new ArrayList<>();
+                            list.add(new Pair<>((String) ds.get("Item Type") + " Charges", orderItem.getCharges()));
+                            if(ds.get("Expenses")!=null){
+                                for(HashMap object: (List<HashMap<String, String>>)ds.get("Expenses"))
+                                {
+                                    if(!object.get("first").equals((String) ds.get("Item Type") + " Charges"))
+                                        list.add(new Pair<>(object.get("first").toString(), object.get("second").toString()));
+                                }
+                            }
+                            orderItem.setExpenses(list);
+                            long total = 0;
+                            for(Pair<String,String> p: list)
+                            {
+                                total += Integer.parseInt(p.second);
+                            }
+                            total = total*Integer.parseInt((String) ds.get("Quantity"));
+                            orderItem.setTotalItemCharges(String.valueOf(total));
                             orderItem.setBodyMs((Map<String, String>) ds.get("Body Measurements"));
 
                             sref.child(ds.getId()).listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
@@ -368,8 +453,10 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
                                                     itemlistadaptor2.addItem(orderItem);
                                                     if(itemlistadaptor.getItemCount()==queryDocumentSnapshots.getDocuments().size())
                                                     {
-                                                        totalAmt.setText("₹ " + itemlistadaptor.makeAmount());
+                                                        totalOrderCharges = String.valueOf(itemlistadaptor.makeAmount());
+                                                        totalAmt.setText("₹ " + totalOrderCharges);
                                                         checkCanGoAhead();
+                                                        fetchPayments();
                                                         dismissLoadingDialog();
                                                     }
                                                 }
@@ -381,6 +468,44 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
                         }
                     }
                 });
+    }
+
+    static List<Payment> paymentList;
+    private void fetchPayments() {
+        paymentList = new ArrayList<>();
+        firebaseFirestore.collection("Orders").document(hash(firebaseAuth.getCurrentUser().getPhoneNumber()))
+                .collection("Details").document(Oid).collection("Payment Details")
+                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<DocumentSnapshot> documentSnapshots = queryDocumentSnapshots.getDocuments();
+                        if(!documentSnapshots.isEmpty())
+                        {
+                            for(DocumentSnapshot ds: documentSnapshots)
+                            {
+                                Payment pay = new Payment();
+                                pay.setName(ds.getId());
+                                pay.setAmount(ds.get("Amount").toString());
+                                pay.setDate(ds.get("Date").toString());
+                                pay.setDay(ds.get("Day").toString());
+                                pay.setTime(ds.get("Time").toString());
+                                pay.setMop(ds.get("MOP").toString());
+
+                                paymentList.add(pay);
+                            }
+                        }
+
+                        setUpCompletionLayout();
+                    }
+                });
+    }
+
+    private void setUpCompletionLayout() {
+        List<OrderItem> orderItemList = itemlistadaptor.getOrderItems();
+        costDisplayItemView = new CostDisplayItemView(orderItemList, paymentList, getApplicationContext(), OrderDetails.this);
+        completionPayment.rv.setAdapter(costDisplayItemView);
+        completionPayment.amtPending.setText("\u20B9 " + costDisplayItemView.makeAmountOf());
+        order.setCharges(costDisplayItemView.makeAmountOf());
     }
 
     public void checkCanGoAhead()
@@ -396,6 +521,41 @@ public class OrderDetails extends AppCompatActivity implements StepperFormListen
             ahead.setVisibility(View.GONE);
         else
             ahead.setVisibility(View.VISIBLE);
+    }
+
+    public void afterReceivingPayment(Intent data)
+    {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
+        String amount = data.getStringExtra("Amount");
+        String mop = data.getStringExtra("MOP");
+        LocalDate currentDate = LocalDate.now();
+        String formattedDate = dateTimeFormatter.format(currentDate);
+        System.out.println("Current Date: " + formattedDate);
+
+        DayOfWeek currentDay = currentDate.getDayOfWeek();
+        String currentDayInitials = currentDay.name().substring(0, 1) + currentDay.name().substring(1).toLowerCase();
+        System.out.println("Current Day: " + currentDayInitials);
+
+        LocalTime currentTime = LocalTime.now();
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
+        String formattedTime = currentTime.format(timeFormatter).replace("am", "AM").replace("pm", "PM");
+        System.out.println("Current Time: " + formattedTime);
+
+        Payment payment = new Payment();
+        payment.setMop(mop);
+        payment.setAmount(amount);
+        payment.setDate(formattedDate);
+        payment.setTime(formattedTime);
+        payment.setDay(currentDayInitials);
+
+        costDisplayItemView.addToPaidAmount(payment);
+        order.setCharges(costDisplayItemView.makeAmountOf());
+        completionPayment.amtPending.setText("\u20B9 " + order.getCharges());
+
+        firebaseFirestore.collection("Orders").document(hash(firebaseAuth.getCurrentUser().getPhoneNumber()))
+                .collection("Details").document(Oid).collection("Payment Details")
+                .document(payment.getName()).set(payment.makeMap());
+
     }
 
 

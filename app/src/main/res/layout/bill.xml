@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/profilePic"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        android:background="@drawable/prof_bg"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_baseline_person_24" />
+
+    <TextView
+        android:id="@+id/shopName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:text="Shop Name"
+        android:textAlignment="center"
+        android:layout_below="@+id/profilePic"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="20dp"
+        android:textSize="18dp"/>
+
+    <TextView
+        android:id="@+id/shopAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Shop Address"
+        android:textAlignment="center"
+        android:layout_below="@+id/shopName"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="20dp"
+        android:textSize="15dp"/>
+
+    <TextView
+        android:id="@+id/shopPhone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Shop Phone"
+        android:textAlignment="center"
+        android:layout_below="@+id/shopAddress"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="20dp"
+        android:textSize="13dp"/>
+
+    <TextView
+        android:id="@+id/shopEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Shop Email"
+        android:textAlignment="center"
+        android:layout_below="@+id/shopPhone"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="20dp"
+        android:textSize="13dp"/>
+
+    <View
+        android:id="@+id/rule"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/bg_grey"
+        android:layout_below="@+id/shopEmail"/>
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="dd MMMM yyyy"
+        android:layout_below="@+id/rule"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="14dp"/>
+
+    <TextView
+        android:id="@+id/cName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Customer Name: "
+        android:textStyle="bold"
+        android:layout_below="@+id/rule"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="25dp"
+        android:textSize="16dp"/>
+
+    <TextView
+        android:id="@+id/cPhone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Customer Phone: "
+        android:textStyle="bold"
+        android:layout_below="@+id/cName"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="20dp"
+        android:textSize="16dp"/>
+
+    <TextView
+        android:id="@+id/orderId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Order ID: "
+        android:textStyle="bold"
+        android:layout_below="@+id/cPhone"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="2dp"
+        android:textSize="16dp"/>
+
+    <TextView
+        android:id="@+id/orderDelivery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delivery Date: "
+        android:textStyle="bold"
+        android:layout_below="@+id/orderId"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="2dp"
+        android:textSize="16dp"/>
+
+    <View
+        android:id="@+id/rule2"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/bg_grey"
+        android:layout_below="@+id/orderDelivery"/>
+
+    <TextView
+        android:id="@+id/textOrderSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:text="Order Summary"
+        android:layout_below="@+id/rule2"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginHorizontal="20dp"
+        android:textSize="18dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="40dp"
+        android:layout_below="@+id/textOrderSummary"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recyclerView"
+        android:id="@+id/RupeesInWords"
+        android:textSize="12dp"
+        android:text="Rupees in Words: "
+        android:layout_marginTop="5dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="40dp"/>
+
+
+    <TextView
+        android:id="@+id/textPaymentSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:text="Payment History"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/RupeesInWords"
+        android:layout_marginTop="10dp"
+        android:layout_marginHorizontal="20dp"
+        android:textSize="18dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="40dp"
+        android:layout_below="@+id/textPaymentSummary"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Amount Pending"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/recyclerView2"
+        android:textStyle="bold|italic"
+        android:layout_marginTop="3dp"
+        android:layout_marginHorizontal="40dp"
+        android:textSize="18dp"/>
+
+    <TextView
+        android:id="@+id/amountPending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="₹ 0"
+        android:textStyle="bold"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/recyclerView2"
+        android:layout_marginTop="3dp"
+        android:layout_marginHorizontal="60dp"
+        android:textSize="18dp"/>
+
+    <ImageView
+        android:id="@+id/sign"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@id/amountPending"
+        android:layout_marginTop="30dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginHorizontal="120dp"
+        android:layout_alignParentEnd="true"/>
+
+</RelativeLayout>

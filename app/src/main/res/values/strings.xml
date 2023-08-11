@@ -42,4 +42,5 @@
     <string name="Add_Item">Add Item</string>
     <string name="ItemDetails">Item Details</string>
     <string name="PrepareOrder">Prepare Order Item</string>
+    <string name="ManagePayments">Manage Payment</string>
 </resources>

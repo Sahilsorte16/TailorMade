@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -53,7 +54,7 @@ public class Customers extends Fragment {
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     private static final int REQUEST_SELECT_CONTACT = 101;
     CustomerAdapter customerAdapter;
-    ImageView addButton;
+    FloatingActionButton addButton;
     SearchView sv;
     List<Customer> customerList;
     TextView tv;

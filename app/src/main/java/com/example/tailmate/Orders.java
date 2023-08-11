@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -46,7 +47,7 @@ public class Orders extends Fragment {
 
     TabLayout tabLayout;
     ViewPager viewPager;
-    ImageView addOrder;
+    FloatingActionButton addOrder;
 
     MyPagerAdapter adapter;
 
@@ -106,6 +107,10 @@ public class Orders extends Fragment {
                                     Order order = new Order(ds.getId(), ds.get("Order Name").toString(), status
                                             , LocalDate.parse(ds.get("Delivery Date").toString(), formatter), customer);
                                     order.setUrgent((Boolean) ds.get("Urgent"));
+                                    if(ds.get("Pending")==null)
+                                        order.setPending(false);
+                                    else
+                                        order.setPending((Boolean) ds.get("Pending"));
                                     if(status.equals("Upcoming")) upcoming.add(order);
                                     else if(status.equals("Active")) active.add(order);
                                     else if(status.equals("Completed")) completed.add(order);

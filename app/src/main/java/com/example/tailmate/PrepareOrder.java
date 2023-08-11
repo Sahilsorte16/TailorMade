@@ -42,12 +42,12 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
 public class PrepareOrder extends AppCompatActivity {
 
-    TextView iName, iType, stitchCharges, totalCharges, msg, stitchName;
+    TextView iName, iType, totalCharges, msg, itemQuantity, itemRate;
     RecyclerView recyclerView, recyclerView1;
     ExpensesAdaptor expensesAdaptor;
     ImageView addInstr, addDress, back;
     Switch aSwitch;
-    long pay=0;
+    long q=0;
     List<Pair<String,String>> expenses;
     List<Bitmap> dresses;
     private int CAMERA_PERMISSION_REQUEST_CODE = 109;
@@ -55,7 +55,7 @@ public class PrepareOrder extends AppCompatActivity {
     private ImageAdaptor imageAdaptor;
     private int pos;
     String id;
-
+    String ttlAmt ="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,9 +64,9 @@ public class PrepareOrder extends AppCompatActivity {
         iName = findViewById(R.id.itemName);
         iType = findViewById(R.id.itemType);
         back = findViewById(R.id.back);
-        stitchName = findViewById(R.id.stitchName);
-        stitchCharges = findViewById(R.id.stitchCharges);
         totalCharges = findViewById(R.id.totalCharges);
+        itemQuantity = findViewById(R.id.itemQuantity);
+        itemRate = findViewById(R.id.totalRate);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView1 = findViewById(R.id.recyclerView1);
         addInstr = findViewById(R.id.addInstr);
@@ -83,10 +83,11 @@ public class PrepareOrder extends AppCompatActivity {
         Intent in = getIntent();
         iName.setText(in.getStringExtra("Item Name"));
         iType.setText(in.getStringExtra("Item Type"));
+        itemQuantity.setText("Quantity: " + in.getStringExtra("Quantity"));
+        q = Integer.parseInt(in.getStringExtra("Quantity"));
+
         pos = in.getIntExtra("LayoutPosition", -1);
         id = in.getStringExtra("Id");
-        stitchName.setText(iType.getText().toString() + " Charges");
-        stitchCharges.setText("\u20B9 " + in.getStringExtra("Charges"));
         aSwitch.setChecked(in.getBooleanExtra("Complete", false));
         Gson gson = new Gson();
         String json = in.getStringExtra("Expenses");
@@ -100,9 +101,9 @@ public class PrepareOrder extends AppCompatActivity {
         imageAdaptor = new ImageAdaptor(dresses, PrepareOrder.this, "Dress ");
         recyclerView1.setAdapter(imageAdaptor);
 
-        pay = Integer.parseInt(in.getStringExtra("Charges"));
-        totalCharges.setText("\u20B9 " + String.valueOf(pay+totalPayment()));
-
+        itemRate.setText("\u20B9 " + String.valueOf(totalPayment()));
+        ttlAmt = String.valueOf(q*(totalPayment()));
+        totalCharges.setText("\u20B9 " + ttlAmt);
         if(imageAdaptor.getItemCount()==0)
         {
             aSwitch.setChecked(false);
@@ -137,6 +138,17 @@ public class PrepareOrder extends AppCompatActivity {
 
     private void implementSwipe() {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT ) {
+
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                int flags = ItemTouchHelper.LEFT;
+
+                if(viewHolder.getLayoutPosition()==0)
+                    flags=0;
+
+                return makeMovementFlags(0, flags);
+            }
+
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
@@ -144,8 +156,13 @@ public class PrepareOrder extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                expensesAdaptor.removeItem(viewHolder.getLayoutPosition());
-                totalCharges.setText("\u20B9 " + String.valueOf(pay+totalPayment()));
+                if(viewHolder.getLayoutPosition()!=0)
+                {
+                    expensesAdaptor.removeItem(viewHolder.getLayoutPosition());
+                    itemRate.setText("\u20B9 " + String.valueOf(totalPayment()));
+                    ttlAmt = String.valueOf(q*(totalPayment()));
+                    totalCharges.setText("\u20B9 " + ttlAmt);
+                }
             }
 
             @Override
@@ -258,7 +275,9 @@ public class PrepareOrder extends AppCompatActivity {
 
                         if (!parameter1.isEmpty() && !parameter2.isEmpty()) {
                             expensesAdaptor.addExpense(parameter1, parameter2);
-                            totalCharges.setText("\u20B9 " + String.valueOf(pay+totalPayment()));
+                            itemRate.setText("\u20B9 " + String.valueOf(totalPayment()));
+                            ttlAmt = String.valueOf(q*(totalPayment()));
+                            totalCharges.setText("\u20B9 " + ttlAmt);
                         }
                     }
                 })
@@ -285,7 +304,7 @@ public class PrepareOrder extends AppCompatActivity {
         String json = gson.toJson(expensesAdaptor.getExpenses());
         intent.putExtra("Expenses",  json);
         intent.putExtra("Dresses", convertToByteArray(imageAdaptor.getImageUrls()));
-        intent.putExtra("Total Charges", String.valueOf(pay + totalPayment()));
+        intent.putExtra("Total Charges", ttlAmt);
         intent.putExtra("isCompleted", aSwitch.isChecked());
         intent.putExtra("Id", id);
         intent.putExtra("Position", pos);

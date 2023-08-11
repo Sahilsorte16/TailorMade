@@ -174,6 +174,11 @@ public class OrderListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             OrderName.setText(order.getOrderName());
             if(order.isUrgent())
                 Urgent.setVisibility(View.VISIBLE);
+            if(order.isPending())
+            {
+                Urgent.setVisibility(View.VISIBLE);
+                Urgent.setText("PENDING");
+            }
         }
         private static String hash(String phoneNumber) {
             String hash = phoneNumber;

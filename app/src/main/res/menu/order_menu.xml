@@ -2,11 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_edit"
+        android:icon="@drawable/baseline_edit_note_24"
         android:title="Edit" />
-    <item
-        android:id="@+id/menu_print"
-        android:title="Print" />
+
     <item
         android:id="@+id/menu_expenses"
-        android:title="Expenses" />
+        android:icon="@drawable/baseline_payments_24"
+        android:title="Manage Payments" />
+
+    <item
+        android:id="@+id/menu_print"
+        android:icon="@drawable/baseline_print_24"
+        android:title="Print" />
 </menu>

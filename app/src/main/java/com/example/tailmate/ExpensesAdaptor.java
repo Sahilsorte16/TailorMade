@@ -7,15 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ExpensesAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -23,12 +20,13 @@ public class ExpensesAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolde
     Context context;
     Activity activity;
 
-    public ExpensesAdaptor(List<Pair<String,String>> map, Context context, Activity activity)
+    public ExpensesAdaptor(List<Pair<String,String>> expenses, Context context, Activity activity)
     {
-        exs = map;
+        exs = expenses;
         this.context = context;
         this.activity = activity;
     }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -40,7 +38,8 @@ public class ExpensesAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         DisplayCardViewHolder displayCardViewHolder = (DisplayCardViewHolder) holder;
-        displayCardViewHolder.bind(exs.get(position).first, exs.get(position).second);
+        if(getItemCount()>0)
+            displayCardViewHolder.bind(exs.get(position).first, exs.get(position).second);
     }
 
     @Override
@@ -57,6 +56,17 @@ public class ExpensesAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public List<Pair<String,String>> getExpenses()
     {
         return exs;
+    }
+
+    public long makeAmount()
+    {
+        long amt=0;
+        for(Pair<String,String> p: exs)
+        {
+            amt += Integer.parseInt(p.second);
+        }
+
+        return amt;
     }
 
     public void removeItem(int layoutPosition) {

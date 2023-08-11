@@ -8,6 +8,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -24,7 +26,9 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
+import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -36,10 +40,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,15 +77,17 @@ public class Add_Item extends AppCompatActivity {
     int pos = -1;
     AutoCompleteTextView itemName;
     Spinner type;
-    EditText charges, instruction;
-    TextView chargesInText, header;
+    EditText charges, instruction, quantity;
+    TextView chargesInText, header, totalCharges;
     Button bodyMeasurements, save;
     ImageView addInstr, mic, addCloth, addPattern, back;
     RecyclerView rv, rv1, rv2;
     String ImageType = "Cloth ", Cid, item_type="Stitching";
     List<String> instructions;
-    List<Bitmap> ClothImages, PatternImages;
+    List<Bitmap> ClothImages, PatternImages, DressImages;
     Map<String,String> bodyMs;
+    Boolean complete;
+    private String expenses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +99,8 @@ public class Add_Item extends AppCompatActivity {
         charges = findViewById(R.id.editTextCharges);
         chargesInText = findViewById(R.id.Charges_in_text);
         bodyMeasurements = findViewById(R.id.body_measurements);
+        quantity = findViewById(R.id.editTextQuantity);
+        totalCharges = findViewById(R.id.totalCharges);
         back = findViewById(R.id.back);
         addInstr = findViewById(R.id.addInstr);
         addCloth = findViewById(R.id.addClothImage);
@@ -128,7 +140,7 @@ public class Add_Item extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, suggestions);
         itemName.setAdapter(adapter);
 
-        charges.addTextChangedListener(new TextWatcher() {
+        TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -136,26 +148,18 @@ public class Add_Item extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                computeCharges(quantity.getText().toString(), charges.getText().toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                String input = s.toString().trim();
-                if (!input.isEmpty()) {
-                    try {
-                        double charges = Double.parseDouble(input);
-                        RupeesConverter rupeesConverter = new RupeesConverter();
-                        String result = rupeesConverter.convertToIndianRupeesWords(charges);
-                        chargesInText.setText(result);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    chargesInText.setText("");
-                }
+
             }
-        });
+        };
+
+        charges.addTextChangedListener(textWatcher);
+        quantity.addTextChangedListener(textWatcher);
+
         addInstr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -226,7 +230,29 @@ public class Add_Item extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
+                AnimatorSet animatorSet = Animations.backAnimation(back);
+                animatorSet.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(@NonNull Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(@NonNull Animator animator) {
+                        onBackPressed();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(@NonNull Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(@NonNull Animator animator) {
+
+                    }
+                });
+                animatorSet.start();
             }
         });
 
@@ -245,47 +271,81 @@ public class Add_Item extends AppCompatActivity {
             else
                 type.setSelection(1);
             charges.setText(in.getStringExtra("Charges"));
+            quantity.setText(in.getStringExtra("Quantity"));
+            Gson gson = new Gson();
+            expenses = in.getStringExtra("Expenses");
             instructions = in.getStringArrayListExtra("Instructions");
+            complete = in.getBooleanExtra("isComplete", false);
             ClothImages =  byteToBitmap((ArrayList<byte[]>) in.getSerializableExtra("Cloth Images"));
             PatternImages = byteToBitmap((ArrayList<byte[]>) in.getSerializableExtra("Pattern Images"));
+            DressImages = byteToBitmap((ArrayList<byte[]>) in.getSerializableExtra("Dress Images"));
+
             bodyMs = (Map<String, String>) in.getSerializableExtra("Body Measurements");
 
             InstructionsAdapter instructionsAdapter = new InstructionsAdapter(instructions, Add_Item.this);
             rv.setAdapter(instructionsAdapter);
 
-            ImageAdaptor imageAdaptor = new ImageAdaptor(ClothImages, Add_Item.this, ImageType);
+            ImageAdaptor imageAdaptor = new ImageAdaptor(ClothImages, Add_Item.this, "Cloth ");
             rv1.setAdapter(imageAdaptor);
 
-            ImageAdaptor imageAdaptor1 = new ImageAdaptor(PatternImages, Add_Item.this, ImageType);
+            ImageAdaptor imageAdaptor1 = new ImageAdaptor(PatternImages, Add_Item.this, "Pattern ");
             rv2.setAdapter(imageAdaptor1);
 
         }
 
     }
 
+    public void computeCharges(String quantity, String rate)
+    {
+        String t = "Total Item Charges:    <b> \u20b9 ";
+        int q=0, r=0;
+        if(!quantity.isEmpty())
+            q = Integer.parseInt(quantity);
+        if(!rate.isEmpty())
+            r = Integer.parseInt(rate);
+
+        String ttlCharges = String.valueOf(q*r);
+        totalCharges.setText(Html.fromHtml(t + ttlCharges + "</b>"));
+
+        if (!ttlCharges.equals("0")) {
+            try {
+                int charges = Integer.parseInt(ttlCharges);
+                RupeesConverter rupeesConverter = new RupeesConverter();
+                String result = rupeesConverter.convertToIndianRupeesWords(charges);
+                chargesInText.setText(result);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        } else {
+            chargesInText.setText("");
+        }
+    }
+
     private List<Bitmap> byteToBitmap(ArrayList<byte[]> imageBytesList) {
         List<Bitmap> bitmapList = new ArrayList<>();
 
-        for (byte[] imageBytes : imageBytesList) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-            bitmapList.add(bitmap);
+        if(imageBytesList!=null)
+        {
+            for (byte[] imageBytes : imageBytesList) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                bitmapList.add(bitmap);
+            }
         }
-
         return bitmapList;
     }
 
     private void sendItemBack() {
         String item_name = itemName.getText().toString();
         String item_charges = charges.getText().toString();
-
+        String item_quantity = quantity.getText().toString();
         if(item_name.isEmpty())
         {
             Toast.makeText(this, "Item Name missing", Toast.LENGTH_SHORT).show();
             return;
         }
-        else if(item_charges.isEmpty())
+        else if(item_charges.isEmpty() || item_quantity.isEmpty())
         {
-            Toast.makeText(this, "Enter charges for the item", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Check charges and rate for the item", Toast.LENGTH_SHORT).show();
             return;
         }
         else if(bodyMs.isEmpty())
@@ -303,11 +363,15 @@ public class Add_Item extends AppCompatActivity {
         intent.putExtra("Item Name", item_name);
         intent.putExtra("Item type", item_type);
         intent.putExtra("Body Measurements", (Serializable) bodyMs);
+        intent.putExtra("isComplete", complete);
         intent.putExtra("Charges", item_charges);
-        intent.putExtra("Total amount", item_charges);
+        intent.putExtra("Quantity", quantity.getText().toString());
+        intent.putExtra("Expenses", expenses);
+        intent.putExtra("Total amount", String.valueOf(Integer.parseInt(item_charges)*Integer.parseInt(quantity.getText().toString())));
         intent.putStringArrayListExtra("Instructions", (ArrayList<String>) instructions);
         intent.putExtra("Cloth Images", convertToByteArray(ClothImages));
         intent.putExtra("Pattern Images", convertToByteArray(PatternImages));
+        intent.putExtra("Dress Images", convertToByteArray(DressImages));
         intent.putExtra("LayoutPosition", pos);
         setResult(RESULT_OK, intent);
         finish();
@@ -315,11 +379,14 @@ public class Add_Item extends AppCompatActivity {
 
     private ArrayList<byte[]> convertToByteArray(List<Bitmap> bitmapList) {
         ArrayList<byte[]> byteArrayArrayList = new ArrayList<>();
-        for (Bitmap bitmap : bitmapList) {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-            byte[] byteArray = byteArrayOutputStream.toByteArray();
-            byteArrayArrayList.add(byteArray);
+        if(bitmapList!=null)
+        {
+            for (Bitmap bitmap : bitmapList) {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                byte[] byteArray = byteArrayOutputStream.toByteArray();
+                byteArrayArrayList.add(byteArray);
+            }
         }
         return byteArrayArrayList;
     }
@@ -635,7 +702,7 @@ public class Add_Item extends AppCompatActivity {
 
 
 
-    public class RupeesConverter {
+    public static class RupeesConverter {
         private final String[] units = {
                 "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
                 "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"
@@ -662,7 +729,7 @@ public class Add_Item extends AppCompatActivity {
             return units[number] + " hundred" + ((current.isEmpty()) ? "" : " and " + current);
         }
 
-        public String convertToIndianRupeesWords(double number) {
+        public String convertToIndianRupeesWords(int number) {
             if (number == 0) {
                 return "zero rupees";
             }

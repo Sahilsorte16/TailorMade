@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -116,10 +118,6 @@ public class CustomerDetails extends AppCompatActivity {
             public void onClick(View view) {
                 boolean isUserWhatsAppInstalled = isWhatsAppInstalled();
                 boolean doesNumberHaveWhatsApp = doesNumberHaveWhatsApp(in.getStringExtra("Phone"));
-
-                System.out.println(isUserWhatsAppInstalled);
-                System.out.println(doesNumberHaveWhatsApp);
-
                 if (isUserWhatsAppInstalled && doesNumberHaveWhatsApp) {
                     sendWhatsAppMessage(in.getStringExtra("Phone"), "");
                 } else {
@@ -163,7 +161,29 @@ public class CustomerDetails extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
+                AnimatorSet animatorSet = Animations.backAnimation(back);
+                animatorSet.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(@NonNull Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(@NonNull Animator animator) {
+                        onBackPressed();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(@NonNull Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(@NonNull Animator animator) {
+
+                    }
+                });
+                animatorSet.start();
             }
         });
 
@@ -200,6 +220,7 @@ public class CustomerDetails extends AppCompatActivity {
             packageManager.getPackageInfo("com.whatsapp", PackageManager.GET_META_DATA);
             return true;
         } catch (PackageManager.NameNotFoundException e) {
+            Toast.makeText(this, "Whatsapp is not installed", Toast.LENGTH_SHORT).show();
             return false;
         }
     }

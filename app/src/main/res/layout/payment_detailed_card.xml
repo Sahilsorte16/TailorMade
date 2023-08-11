@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/installment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Installment 1"
+        android:textStyle="bold"
+        android:textSize="16dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/dateDayTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date, Day and Time"
+        android:textStyle="normal"
+        android:textSize="13dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/installment"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="2dp"/>
+
+    <TextView
+        android:id="@+id/Mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cash"
+        android:textStyle="normal"
+        android:textSize="13dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/dateDayTime"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="2dp"/>
+
+    <TextView
+        android:id="@+id/amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\u20b9 0"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginVertical="25dp"
+        android:textSize="18dp"/>
+</RelativeLayout>
