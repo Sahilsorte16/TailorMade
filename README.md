@@ -10,4 +10,3 @@ choices.
 The app allows tailors to create, update, and track orders seamlessly. Tailors can assign unique order numbers, specify delivery dates, record
 payment details, and attach reference images for each order.
 
-# Screenshots
