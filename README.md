@@ -13,4 +13,4 @@ payment details, and attach reference images for each order.
 # Screenshots
 
 1. SignUp & LogIn Activity
-   ![Sample Image](https://github.com/username/repository/raw/main/images/sample-image.png)
+   ![Sample Image](Screenshots/First Page.jpg)
