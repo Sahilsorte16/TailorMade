@@ -16,9 +16,15 @@ payment details, and attach reference images for each order.
 <div style="display: flex;">
     <img src="Screenshots/first_page.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
     <img src="Screenshots/SignUp.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
-    <img src="Screenshots/OTP.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
     <img src="Screenshots/LogIn.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
+    <img src="Screenshots/OTP.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
 </div>
+
+<div style="display: flex;">
+    <img src="Screenshots/Shop Details.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
+</div>
+
+2. 
 
 
 
