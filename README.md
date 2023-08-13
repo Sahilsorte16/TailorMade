@@ -10,3 +10,7 @@ choices.
 The app allows tailors to create, update, and track orders seamlessly. Tailors can assign unique order numbers, specify delivery dates, record
 payment details, and attach reference images for each order.
 
+# Screenshots
+
+1. SignUp & LogIn Activity
+   ![Sample Image](https://github.com/username/repository/raw/main/images/sample-image.png)
