@@ -29,7 +29,7 @@ payment details, and attach reference images for each order.
     <img src="Screenshots/Customer List.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
     <img src="Screenshots/Add Customer.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
     <img src="Screenshots/Customer Details.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
-    <img src="Screenshots/Body Measurements Display.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
+    <img src="Screenshots/Body Measuremets Display.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
 </div>
 
 3. Add Order
@@ -57,7 +57,7 @@ payment details, and attach reference images for each order.
 <div style="display: flex;">
     <img src="Screenshots/Order Completed.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
     <img src="Screenshots/Payment and Bill.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
-    <img src="Screenshots/Payment Otions.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
+    <img src="Screenshots/Payment Options.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
     <img src="Screenshots/Scan To Pay.jpg" alt="Alt Text" style="width: 200px; height: 300px; margin-right: 30px;">
 </div>
 
