@@ -13,5 +13,5 @@ payment details, and attach reference images for each order.
 # Screenshots
 
 1. SignUp & LogIn Activity
-  ![Sample Image](https://github.com/Sahilsorte16/TailorMade/Screenshots/SignUp.jpg)
+  ![Sample Image](Screenshots/first_page.jpg)
 
