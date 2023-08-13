@@ -13,6 +13,7 @@ payment details, and attach reference images for each order.
 # Screenshots
 
 1. SignUp & LogIn Activity
-  <img src="Screenshots/first_page.jpg" alt="Alt Text" width="50" height="50">
+  <img src="Screenshots/first_page.jpg" alt="Alt Text" width="150" height="250">
+  <img src="Screenshots/SignUp.jpg" alt="Alt Text" width="150" height="250">
 
 
